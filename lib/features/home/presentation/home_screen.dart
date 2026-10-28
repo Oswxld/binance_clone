@@ -265,11 +265,9 @@ class _BalanceSection extends StatelessWidget {
             const Text("Today's PNL",
                 style: TextStyle(color: _muted, fontSize: 12)),
             const SizedBox(width: 6),
-            const Text('-KSh2.39 (-0.62%)',
-                style: TextStyle(color: _red, fontSize: 12,
+            const Text('KSh0.00 (0.00%)',
+                style: TextStyle(color: _muted, fontSize: 12,
                     fontWeight: FontWeight.w500)),
-            const SizedBox(width: 4),
-            _svg('pnl_down', 12),
           ],
         ),
         if (balance.asData?.value.hasValuation == false) ...[
