@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../core/presentation/app_bottom_navigation.dart';
-import '../../markets/presentation/markets_screen.dart';
-
 import '../domain/home_balance.dart';
 import 'home_provider.dart';
 
@@ -40,13 +37,10 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(homeBalanceProvider);
 
-    return Scaffold(
-      backgroundColor: _bg,
-      body: SafeArea(
-        top: true,
-        bottom: true,
-        child: Stack(
-          children: [
+    return ColoredBox(
+      color: _bg,
+      child: Stack(
+        children: [
             Column(
               children: [
                 const _TopNavigation(),
@@ -90,27 +84,14 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                AppBottomNavigation(
-                  selected: AppTab.home,
-                  onSelect: (tab) {
-                    if (tab == AppTab.markets) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const MarketsScreen(),
-                        ),
-                      );
-                    }
-                  },
-                ),
               ],
             ),
             const Positioned(
               right: 0,
-              bottom: 78,
+              bottom: 18,
               child: _AssistantBubble(),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }

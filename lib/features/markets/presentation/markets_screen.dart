@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../core/presentation/app_bottom_navigation.dart';
-
 /// Static Markets mockup matching the supplied HTML.
 /// Market quotations, filters and search are placeholders for this iteration.
 class MarketsScreen extends StatelessWidget {
@@ -16,13 +14,10 @@ class MarketsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _background,
-      body: SafeArea(
-        top: true,
-        bottom: true,
-        child: Column(
-          children: [
+    return ColoredBox(
+      color: _background,
+      child: Column(
+        children: [
             const _MarketSearchHeader(),
             const _CategoryTabs(),
             const _TradingTypeTabs(),
@@ -42,16 +37,7 @@ class MarketsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            AppBottomNavigation(
-              selected: AppTab.markets,
-              onSelect: (tab) {
-                if (tab == AppTab.home) {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
