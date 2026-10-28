@@ -15,7 +15,6 @@ const _border = Color(0xFF23272E);
 const _muted = Color(0xFF848E9C);
 const _white = Color(0xFFEAECEF);
 const _yellow = Color(0xFFFCD535);
-const _green = Color(0xFF0ECB81);
 
 Widget _icon(String name, double size) =>
     SvgPicture.asset('assets/svgs/' + name + '.svg',
@@ -201,7 +200,7 @@ class _PortfolioHeader extends StatelessWidget {
             style: TextStyle(color: Color(0xFFF6465D), fontSize: 11)),
         ],
         const SizedBox(height: 10),
-        Center(child: _icon('asset_down_chevron', 15)),
+        Center(child: _icon('asset_down_chevron', 14)),
       ],
     );
   }
@@ -293,9 +292,9 @@ class _AllocationCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               )),
               const Spacer(),
-              _icon('asset_alloc_filter', 16),
+              _icon('asset_alloc_filter', 14),
               const SizedBox(width: 10),
-              _icon('asset_down', 16),
+              _icon('asset_down', 14),
             ],
           ),
           const SizedBox(height: 16),
@@ -365,7 +364,7 @@ class _BalancesCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               )),
               const Spacer(),
-              _icon('asset_balance_filter', 17),
+              _icon('asset_balance_filter', 16),
             ],
           ),
           const SizedBox(height: 18),

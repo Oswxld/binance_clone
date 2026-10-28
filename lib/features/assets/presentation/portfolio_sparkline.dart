@@ -64,7 +64,20 @@ class _PortfolioLineGraph extends StatelessWidget {
             isCurved: false,
             isStrokeCapRound: true,
             dotData: const FlDotData(show: false),
-            belowBarData: BarAreaData(show: false),
+            // Subtle highlight fading away beneath the illustrative line.
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0x2AFCD535),
+                  Color(0x10FCD535),
+                  Color(0x00FCD535),
+                ],
+                stops: [0.0, 0.45, 1.0],
+              ),
+            ),
           ),
         ],
       ),
