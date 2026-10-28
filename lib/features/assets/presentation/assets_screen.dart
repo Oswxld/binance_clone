@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../domain/wallet_allocation.dart';
+import 'portfolio_sparkline.dart';
+
 import '../../home/domain/home_balance.dart';
 import '../../home/presentation/home_provider.dart';
 import '../../../core/utils/wallet_amount_formatter.dart';
@@ -148,15 +151,18 @@ class _PortfolioHeader extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                totalText,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 29,
-                  letterSpacing: -0.4,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  totalText,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 29,
+                    letterSpacing: -0.4,
+                  ),
                 ),
               ),
             ),
@@ -168,7 +174,7 @@ class _PortfolioHeader extends StatelessWidget {
             const SizedBox(width: 4),
             _icon('asset_currency_chevron', 13),
             const SizedBox(width: 9),
-            _icon('asset_sparkline', 90),
+            const PortfolioSparkline(),
           ],
         ),
         const SizedBox(height: 5),
@@ -234,7 +240,7 @@ class _ActionButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,
-          child: _icon(svg, 21),
+          child: _icon(svg, 27),
         ),
         const SizedBox(height: 9),
         Text(label,
@@ -274,13 +280,7 @@ class _AllocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = balance.totalKes;
-    final usdtPortion = balance.hasValuation && total > 0
-        ? (balance.usdtValueKes / total).clamp(0.0, 1.0).toDouble()
-        : 0.0;
-    final btcPortion = balance.hasValuation && total > 0
-        ? (balance.btcValueKes / total).clamp(0.0, 1.0).toDouble()
-        : 0.0;
+    final allocation = WalletAllocation.fromBalance(balance);
 
     return _AssetCard(
       child: Column(
@@ -301,24 +301,43 @@ class _AllocationCard extends StatelessWidget {
           const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: Container(
+            child: SizedBox(
               height: 8,
-              color: const Color(0xFF2B313A),
-              child: Row(
-                children: [
-                  if (usdtPortion > 0)
-                    Expanded(
-                      flex: (usdtPortion * 10000).ceil(),
-                      child: const ColoredBox(color: Color(0xFF1E75FF)),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (!allocation.hasValuation) {
+                    // No holdings or no KES rates: show a neutral bar,
+                    // never fake the mockup's 78/22 allocation.
+                    return const ColoredBox(color: Color(0xFF2B313A));
+                  }
+                  // Tween just the USDT portion. BTC occupies the remainder,
+                  // keeping both proportions accurate as Realtime updates arrive.
+                  return TweenAnimationBuilder<double>(
+                    tween: Tween<double>(
+                      begin: 0,
+                      end: allocation.usdtFraction,
                     ),
-                  if (btcPortion > 0)
-                    Expanded(
-                      flex: (btcPortion * 10000).ceil(),
-                      child: const ColoredBox(color: _yellow),
-                    ),
-                  if (usdtPortion == 0 && btcPortion == 0)
-                    const Expanded(child: SizedBox.shrink()),
-                ],
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, usdtShare, _) {
+                      final blueWidth = constraints.maxWidth * usdtShare;
+                      return Row(
+                        children: [
+                          if (blueWidth > 0)
+                            SizedBox(
+                              width: blueWidth,
+                              child: const ColoredBox(
+                                color: Color(0xFF1E75FF),
+                              ),
+                            ),
+                          const Expanded(
+                            child: ColoredBox(color: _yellow),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ),

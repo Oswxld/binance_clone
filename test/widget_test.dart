@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:binance/features/home/domain/home_balance.dart';
 import 'package:binance/core/utils/wallet_amount_formatter.dart';
+import 'package:binance/features/assets/domain/wallet_allocation.dart';
 
 void main() {
   test('USDT and BTC holdings are both included in KES total', () {
@@ -40,4 +41,37 @@ void main() {
   test('KES formatting matches across Home and Assets', () {
     expect(formatWalletMoney(10497860.1), '10,497,860.10');
   });
+  test('allocation updates with USDT/BTC KES values', () {
+    final first = WalletAllocation.fromBalance(HomeBalance.valued(
+      usdt: 3,
+      btc: 1,
+      usdtKes: 100,
+      btcKes: 100,
+    ));
+    expect(first.usdtFraction, closeTo(0.75, 0.00001));
+    expect(first.btcFraction, closeTo(0.25, 0.00001));
+
+    final second = WalletAllocation.fromBalance(HomeBalance.valued(
+      usdt: 1,
+      btc: 3,
+      usdtKes: 100,
+      btcKes: 100,
+    ));
+    expect(second.usdtFraction, closeTo(0.25, 0.00001));
+    expect(second.btcFraction, closeTo(0.75, 0.00001));
+  });
+
+  test('allocation stays empty for zero or unpriced balances', () {
+    final zero = WalletAllocation.fromBalance(const HomeBalance.zero());
+    final unknown = WalletAllocation.fromBalance(
+      const HomeBalance.unpriced(usdt: 3, btc: 0.1),
+    );
+    expect(zero.hasValuation, false);
+    expect(zero.usdtFraction, 0);
+    expect(zero.btcFraction, 0);
+    expect(unknown.hasValuation, false);
+    expect(unknown.usdtFraction, 0);
+  });
+
+
 }
