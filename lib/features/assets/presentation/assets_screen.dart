@@ -308,12 +308,12 @@ class _AllocationCard extends StatelessWidget {
                 children: [
                   if (usdtPortion > 0)
                     Expanded(
-                      flex: (usdtPortion * 10000).round().clamp(1, 10000),
+                      flex: (usdtPortion * 10000).ceil(),
                       child: const ColoredBox(color: Color(0xFF1E75FF)),
                     ),
                   if (btcPortion > 0)
                     Expanded(
-                      flex: (btcPortion * 10000).round().clamp(1, 10000),
+                      flex: (btcPortion * 10000).ceil(),
                       child: const ColoredBox(color: _yellow),
                     ),
                   if (usdtPortion == 0 && btcPortion == 0)

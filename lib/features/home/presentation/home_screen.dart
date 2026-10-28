@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/utils/wallet_amount_formatter.dart';
 import '../domain/home_balance.dart';
 import 'home_provider.dart';
 
@@ -17,18 +18,6 @@ const _white = Colors.white;
 
 Widget _svg(String name, double size) =>
     SvgPicture.asset('assets/svgs/' + name + '.svg', width: size, height: size);
-
-String _money(double value) {
-  final parts = value.toStringAsFixed(2).split('.');
-  var whole = parts.first;
-  final groups = <String>[];
-  while (whole.length > 3) {
-    groups.insert(0, whole.substring(whole.length - 3));
-    whole = whole.substring(0, whole.length - 3);
-  }
-  groups.insert(0, whole);
-  return groups.join(',') + '.' + parts.last;
-}
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -223,7 +212,7 @@ class _BalanceSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final totalText = balance.when(
       data: (value) => value.hasValuation
-          ? 'KSh' + _money(value.totalKes)
+          ? 'KSh' + formatWalletMoney(value.totalKes)
           : 'KSh--',
       loading: () => 'KSh0.00',
       error: (error, stack) => 'KSh--',

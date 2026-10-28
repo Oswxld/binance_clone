@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// Tabs currently implemented in the demo. Other visible icons remain visual
 /// placeholders until their corresponding features are built.
-enum AppTab { home, markets, invest }
+enum AppTab { home, markets, invest, assets }
 
 class AppBottomNavigation extends StatelessWidget {
   const AppBottomNavigation({
@@ -32,6 +32,7 @@ class AppBottomNavigation extends StatelessWidget {
     final homeSelected = selected == AppTab.home;
     final marketsSelected = selected == AppTab.markets;
     final investSelected = selected == AppTab.invest;
+    final assetsSelected = selected == AppTab.assets;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 9, 10, 8),
@@ -80,8 +81,10 @@ class AppBottomNavigation extends StatelessWidget {
           ),
           _navigationItem(
             name: 'Assets',
-            icon: 'assets',
-            active: false,
+            icon: assetsSelected ? 'assets_active' : 'assets_inactive',
+            active: assetsSelected,
+            activeLabelColor: Colors.white,
+            onTap: () => onSelect(AppTab.assets),
           ),
         ],
       ),

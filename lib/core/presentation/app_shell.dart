@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/assets/presentation/assets_screen.dart';
 import '../../features/invest/presentation/invest_screen.dart';
 import '../../features/markets/presentation/markets_screen.dart';
 import 'app_bottom_navigation.dart';
@@ -34,6 +35,7 @@ class _AppShellState extends State<AppShell> {
                   HomeScreen(),
                   MarketsScreen(),
                   InvestScreen(),
+                  AssetsScreen(),
                 ],
               ),
             ),
