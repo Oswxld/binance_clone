@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/presentation/app_bottom_navigation.dart';
+import '../../markets/presentation/markets_screen.dart';
+
 import '../domain/home_balance.dart';
 import 'home_provider.dart';
 
@@ -87,7 +90,18 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const _BottomNavigation(),
+                AppBottomNavigation(
+                  selected: AppTab.home,
+                  onSelect: (tab) {
+                    if (tab == AppTab.markets) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const MarketsScreen(),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
             const Positioned(
@@ -771,64 +785,6 @@ class _AssistantBubble extends StatelessWidget {
         ),
       ),
       child: const Text('😊', style: TextStyle(fontSize: 12)),
-    );
-  }
-}
-
-class _BottomNavigation extends StatelessWidget {
-  const _BottomNavigation();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 13, 10, 5),
-      decoration: const BoxDecoration(
-        color: _bg,
-        border: Border(top: BorderSide(color: _border, width: 0.7)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              _bottomItem('Home', 'home', true),
-              _bottomItem('Markets', 'markets', false),
-              Expanded(
-                child: Center(
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                        color: _yellow, shape: BoxShape.circle),
-                    child: _svg('trade', 24),
-                  ),
-                ),
-              ),
-              _bottomItem('Invest', 'invest', false),
-              _bottomItem('Assets', 'assets', false),
-            ],
-          ),
-
-        ],
-      ),
-    );
-  }
-
-  Widget _bottomItem(String title, String asset, bool active) {
-    return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _svg(asset, 20),
-          const SizedBox(height: 7),
-          Text(title,
-              style: TextStyle(
-                  color: active ? _yellow : _muted,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500)),
-        ],
-      ),
     );
   }
 }
