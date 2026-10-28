@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg"  fill="none" stroke="#121212" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+<!-- Left arrow pointing downward -->
+<path d="M8 7v10M8 17l-3-3"></path>
+<!-- Right arrow pointing upward -->
+<path d="M16 17V7M16 7l3 3"></path>
+</svg>
