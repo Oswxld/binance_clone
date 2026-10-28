@@ -17,12 +17,13 @@ Future<void> main() async {
     throw StateError('Add SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY to .env.');
   }
   await Supabase.initialize(url: url, publishableKey: key);
-  // The supplied design includes its own status indicators and home bar.
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  // Let Android render the real clock, notifications, connectivity, battery,
+  // and system navigation. SafeArea keeps Flutter content below/above them.
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Color(0xFF181A20),
+    statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Color(0xFF181A20),
+    systemNavigationBarColor: Colors.transparent,
     systemNavigationBarIconBrightness: Brightness.light,
   ));
   runApp(const ProviderScope(child: BinanceCloneApp()));
