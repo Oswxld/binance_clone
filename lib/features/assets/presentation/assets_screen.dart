@@ -48,14 +48,14 @@ class AssetsScreen extends ConsumerWidget {
               },
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 22),
+                padding: const EdgeInsets.fromLTRB(14, 7, 14, 16),
                 children: [
                   _PortfolioHeader(balance: balance),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   const _AssetActions(),
-                  const SizedBox(height: 19),
+                  const SizedBox(height: 12),
                   _AllocationCard(balance: quantities),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   _BalancesCard(balance: balance, quantities: quantities),
                 ],
               ),
@@ -75,22 +75,22 @@ class _AssetsCategoryTabs extends StatelessWidget {
     const tabs = ['Overview', 'Futures', 'Earn', 'Spot', 'Funding'];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+      padding: const EdgeInsets.fromLTRB(14, 6, 14, 4),
       child: Row(
         children: [
           for (var i = 0; i < tabs.length; i++) ...[
-            if (i != 0) const SizedBox(width: 20),
+            if (i != 0) const SizedBox(width: 16),
             SizedBox(
-              height: 37,
+              height: 29,
               child: Stack(
                 alignment: Alignment.topCenter,
                 children: [
                   Text(
                     tabs[i],
                     style: TextStyle(
-                      fontSize: i == 0 ? 18 : 17,
+                      fontSize: i == 0 ? 14 : 13,
                       fontWeight: i == 0
-                          ? FontWeight.bold : FontWeight.w500,
+                          ? FontWeight.w600 : FontWeight.w400,
                       color: i == 0 ? Colors.white : _muted,
                     ),
                   ),
@@ -98,8 +98,8 @@ class _AssetsCategoryTabs extends StatelessWidget {
                     const Positioned(
                       bottom: 0,
                       child: SizedBox(
-                        width: 16,
-                        height: 3,
+                        width: 14,
+                        height: 2.5,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: _yellow,
@@ -138,54 +138,67 @@ class _PortfolioHeader extends StatelessWidget {
         Row(
           children: [
             const Text('Est. Total Value', style: TextStyle(
-              color: _muted, fontSize: 13,
+              color: _muted, fontSize: 11.5,
             )),
-            const SizedBox(width: 6),
-            _icon('asset_eye', 16),
-            const Spacer(),
-            _icon('asset_history', 20),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  totalText,
-                  maxLines: 1,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 29,
-                    letterSpacing: -0.4,
-                  ),
-                ),
-              ),
-            ),
             const SizedBox(width: 5),
-            const Text('KES', style: TextStyle(
-              fontSize: 12, color: _muted,
-              fontWeight: FontWeight.w600,
-            )),
-            const SizedBox(width: 4),
-            _icon('asset_currency_chevron', 13),
-            const SizedBox(width: 9),
-            const PortfolioSparkline(),
+            _icon('asset_eye', 14),
+            const Spacer(),
+            _icon('asset_history', 18),
           ],
         ),
         const SizedBox(height: 5),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Amount and its currency selector form ONE compact group.
+            // They shrink together on narrow phones without pushing the
+            // currency label against the graph on the opposite side.
+            Flexible(
+              fit: FlexFit.loose,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        totalText,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24,
+                          letterSpacing: -0.45,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  const Text('KES', style: TextStyle(
+                    fontSize: 10, color: _muted,
+                    fontWeight: FontWeight.w500,
+                  )),
+                  const SizedBox(width: 2),
+                  _icon('asset_currency_chevron', 11),
+                ],
+              ),
+            ),
+            const Spacer(),
+            const SizedBox(width: 8),
+            const PortfolioSparkline(),
+          ],
+        ),
+        const SizedBox(height: 3),
         const Row(
           children: [
             Text("Today's PNL", style: TextStyle(
-              fontSize: 12, color: _muted,
+              fontSize: 10.5, color: _muted,
             )),
-            SizedBox(width: 7),
+            SizedBox(width: 6),
             Text('KSh0.00 (0.00%)', style: TextStyle(
-              fontSize: 12, color: _muted,
-              fontWeight: FontWeight.w500,
+              fontSize: 10.5, color: _muted,
+              fontWeight: FontWeight.w400,
             )),
           ],
         ),
@@ -199,8 +212,8 @@ class _PortfolioHeader extends StatelessWidget {
           const Text('Could not connect to balances. Pull down to retry.',
             style: TextStyle(color: Color(0xFFF6465D), fontSize: 11)),
         ],
-        const SizedBox(height: 10),
-        Center(child: _icon('asset_down_chevron', 14)),
+        const SizedBox(height: 5),
+        Center(child: _icon('asset_down_chevron', 12)),
       ],
     );
   }
@@ -232,21 +245,21 @@ class _ActionButton extends StatelessWidget {
     return Column(
       children: [
         Container(
-          height: 48,
-          width: 56,
+          height: 41,
+          width: 50,
           decoration: BoxDecoration(
             color: const Color(0xFF1E2329),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
-          child: _icon(svg, 27),
+          child: _icon(svg, 23),
         ),
-        const SizedBox(height: 9),
+        const SizedBox(height: 6),
         Text(label,
           maxLines: 1,
           style: const TextStyle(
-            color: _white, fontSize: 11,
-            fontWeight: FontWeight.w500,
+            color: _white, fontSize: 10,
+            fontWeight: FontWeight.w400,
           ),
         ),
       ],
@@ -262,10 +275,10 @@ class _AssetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _border),
       ),
       child: child,
@@ -288,20 +301,20 @@ class _AllocationCard extends StatelessWidget {
             children: [
               const Text('Allocation', style: TextStyle(
                 color: _white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w500,
               )),
               const Spacer(),
-              _icon('asset_alloc_filter', 14),
-              const SizedBox(width: 10),
-              _icon('asset_down', 14),
+              _icon('asset_alloc_filter', 13),
+              const SizedBox(width: 8),
+              _icon('asset_down', 13),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 11),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: SizedBox(
-              height: 8,
+              height: 7,
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   if (!allocation.hasValuation) {
@@ -360,14 +373,14 @@ class _BalancesCard extends StatelessWidget {
           Row(
             children: [
               const Text('Balance', style: TextStyle(
-                color: _white, fontSize: 14,
-                fontWeight: FontWeight.w600,
+                color: _white, fontSize: 12.5,
+                fontWeight: FontWeight.w500,
               )),
               const Spacer(),
-              _icon('asset_balance_filter', 16),
+              _icon('asset_balance_filter', 14),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
           _AssetBalanceRow(
             ticker: 'USDT',
             subtitle: 'TetherUS',
@@ -377,9 +390,9 @@ class _BalancesCard extends StatelessWidget {
                 : formatWalletQuantity(quantities.usdt),
             kes: _kesText(quantities.usdtValueKes),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
           const Divider(color: _border, height: 1),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
           _AssetBalanceRow(
             ticker: 'BTC',
             subtitle: 'Bitcoin',
@@ -427,63 +440,64 @@ class _AssetBalanceRow extends StatelessWidget {
         Row(
           children: [
             Container(
-              height: 28,
-              width: 28,
+              height: 25,
+              width: 25,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: accent,
               ),
-              child: _icon(svg, 17),
+              child: _icon(svg, 15),
             ),
-            const SizedBox(width: 11),
+            const SizedBox(width: 9),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(ticker, style: const TextStyle(
                     color: _white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                   )),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
                   Text(subtitle, style: const TextStyle(
-                    color: _muted, fontSize: 12,
+                    color: _muted, fontSize: 10.5,
                   )),
                 ],
               ),
             ),
             const SizedBox(width: 6),
             Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(amount, style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.3,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.2,
                 )),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(kes, style: const TextStyle(
-                  color: _muted, fontSize: 12,
+                  color: _muted, fontSize: 10.5,
                 )),
               ],
             ),
           ],
         ),
         if (pnl) ...[
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           const Row(
             children: [
               Text('Unrealized PNL',
-                style: TextStyle(color: _muted, fontSize: 12)),
+                style: TextStyle(color: _muted, fontSize: 10.5)),
               Spacer(),
               Text('KSh0.00 (0.00%)',
-                style: TextStyle(color: _muted, fontSize: 12)),
+                style: TextStyle(color: _muted, fontSize: 10.5)),
             ],
           ),
         ],
-        const SizedBox(height: 12),
+        const SizedBox(height: 9),
         const Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -509,12 +523,12 @@ class _ActionChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       padding: const EdgeInsets.symmetric(
-        horizontal: 19, vertical: 8,
+        horizontal: 14, vertical: 6,
       ),
       child: Text(text, style: const TextStyle(
         color: Colors.white,
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
+        fontSize: 10.5,
+        fontWeight: FontWeight.w500,
       )),
     );
   }
