@@ -14,7 +14,7 @@ class PortfolioSparkline extends StatelessWidget {
   static final List<FlSpot> _sampleSpots = List<FlSpot>.unmodifiable(
     List<FlSpot>.generate(65, (index) {
       // Trace the supplied SVG's zig-zag, adding deterministic fine
-      // fluctuations so the 96px miniature resembles a dense market graph.
+      // fluctuations so the miniature resembles a dense market graph.
       const anchors = <double>[
         18, 18, 20, 16, 18, 14, 15, 13, 15,
         14, 8, 14, 4, 18, 14, 23, 20, 24,
@@ -34,8 +34,8 @@ class PortfolioSparkline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox(
-      width: 96,
-      height: 36,
+      width: 86,
+      height: 32,
       child: RepaintBoundary(child: _PortfolioLineGraph()),
     );
   }

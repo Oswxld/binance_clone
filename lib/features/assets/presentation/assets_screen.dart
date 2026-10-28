@@ -153,8 +153,7 @@ class _PortfolioHeader extends StatelessWidget {
             // Amount and its currency selector form ONE compact group.
             // They shrink together on narrow phones without pushing the
             // currency label against the graph on the opposite side.
-            Flexible(
-              fit: FlexFit.loose,
+            Expanded(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -184,7 +183,6 @@ class _PortfolioHeader extends StatelessWidget {
                 ],
               ),
             ),
-            const Spacer(),
             const SizedBox(width: 8),
             const PortfolioSparkline(),
           ],
