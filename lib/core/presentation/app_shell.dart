@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/invest/presentation/invest_screen.dart';
 import '../../features/markets/presentation/markets_screen.dart';
 import 'app_bottom_navigation.dart';
 
@@ -28,10 +29,11 @@ class _AppShellState extends State<AppShell> {
           children: [
             Expanded(
               child: IndexedStack(
-                index: _selected == AppTab.home ? 0 : 1,
+                index: _selected.index,
                 children: const [
                   HomeScreen(),
                   MarketsScreen(),
+                  InvestScreen(),
                 ],
               ),
             ),
