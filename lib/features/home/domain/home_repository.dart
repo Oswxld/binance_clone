@@ -1,5 +1,6 @@
 import 'home_balance.dart';
 
 abstract interface class HomeRepository {
-  Future<HomeBalance> fetchBalance();
+  /// Initial Supabase SELECT followed by Postgres UPDATE/INSERT events.
+  Stream<HomeBalance> watchBalance();
 }

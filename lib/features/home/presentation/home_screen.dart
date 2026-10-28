@@ -222,8 +222,10 @@ class _BalanceSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalText = balance.when(
-      data: (value) => 'KSh' + _money(value.totalKes),
-      loading: () => 'KSh...',
+      data: (value) => value.hasValuation
+          ? 'KSh' + _money(value.totalKes)
+          : 'KSh--',
+      loading: () => 'KSh0.00',
       error: (error, stack) => 'KSh--',
     );
 
@@ -281,6 +283,13 @@ class _BalanceSection extends StatelessWidget {
             _svg('pnl_down', 12),
           ],
         ),
+        if (balance.asData?.value.hasValuation == false) ...[
+          const SizedBox(height: 8),
+          const Text(
+            'Balances updated, but KES rates are unavailable.',
+            style: TextStyle(color: _red, fontSize: 11),
+          ),
+        ],
         if (balance.hasError) ...[
           const SizedBox(height: 8),
           GestureDetector(
