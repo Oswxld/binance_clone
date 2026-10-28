@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/theme/binance_palette.dart';
+
 /// Static Markets mockup matching the supplied HTML.
 /// Market quotations, filters and search are placeholders for this iteration.
 class MarketsScreen extends StatelessWidget {
   const MarketsScreen({super.key});
 
-  static const _background = Color(0xFF121212);
-  static const _secondary = Color(0xFF848E9C);
-  static const _primary = Color(0xFFEAECEF);
-  static const _yellow = Color(0xFFF0B90B);
-  static const _chip = Color(0xFF24272F);
+  static const _background = BinancePalette.canvas;
+  static const _secondary = BinancePalette.textMuted;
+  static const _primary = BinancePalette.textPrimary;
+  static const _yellow = BinancePalette.yellow;
+  static const _chip = BinancePalette.raised;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class MarketsScreen extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 itemCount: _coins.length,
                 separatorBuilder: (_, __) => const Divider(
-                  color: Color(0x19171A21),
+                  color: BinancePalette.divider,
                   height: 1,
                   thickness: 1,
                 ),
@@ -65,7 +67,7 @@ class _MarketSearchHeader extends StatelessWidget {
               height: 36,
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: const Color(0xFF20242A),
+                color: BinancePalette.raised,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Row(
@@ -103,7 +105,7 @@ class _CategoryTabs extends StatelessWidget {
     return Container(
       alignment: Alignment.centerLeft,
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF1F2328))),
+        border: Border(bottom: BorderSide(color: BinancePalette.divider)),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -219,7 +221,7 @@ class _MarketFilters extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF1A1D24))),
+        border: Border(bottom: BorderSide(color: BinancePalette.divider)),
       ),
       child: Row(
         children: [
@@ -255,7 +257,7 @@ class _MarketFilters extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Container(
-            width: 1, height: 15, color: const Color(0xFF2A2E39),
+            width: 1, height: 15, color: BinancePalette.border,
           ),
           const SizedBox(width: 8),
           const Text('USDT', style: TextStyle(
@@ -429,7 +431,7 @@ class _MarketCoinRow extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 3, vertical: 1),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF22262D),
+                              color: BinancePalette.raised,
                               borderRadius: BorderRadius.circular(2),
                             ),
                             child: Text(coin.leverage, style: const TextStyle(
@@ -501,8 +503,8 @@ class _MarketCoinRow extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: coin.up
-                      ? const Color(0xFF0ECB81)
-                      : const Color(0xFFF6465D),
+                      ? BinancePalette.green
+                      : BinancePalette.red,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(coin.change,

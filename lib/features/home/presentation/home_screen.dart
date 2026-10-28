@@ -3,18 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/utils/wallet_amount_formatter.dart';
+import '../../../core/theme/binance_palette.dart';
 import '../domain/home_balance.dart';
 import 'home_provider.dart';
 
-// Exact source palette from the supplied Tailwind design.
-const _bg = Color(0xFF181A20);
-const _card = Color(0xFF202630);
-const _border = Color(0xFF2B313A);
-const _yellow = Color(0xFFFCD535);
-const _green = Color(0xFF0ECB81);
-const _red = Color(0xFFF6465D);
-const _muted = Color(0xFF848E9C);
-const _white = Colors.white;
+// One shared Binance Classic-inspired palette across all tabs.
+const _bg = BinancePalette.canvas;
+const _card = BinancePalette.surface;
+const _border = BinancePalette.border;
+const _yellow = BinancePalette.yellow;
+const _green = BinancePalette.green;
+const _red = BinancePalette.red;
+const _muted = BinancePalette.textMuted;
+const _white = BinancePalette.textPrimary;
 
 Widget _svg(String name, double size) =>
     SvgPicture.asset('assets/svgs/' + name + '.svg', width: size, height: size);
@@ -103,8 +104,8 @@ class _TopNavigation extends StatelessWidget {
                 height: 28,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF262626),
-                  border: Border.all(color: const Color(0xFF404040)),
+                  color: BinancePalette.raised,
+                  border: Border.all(color: BinancePalette.border),
                   shape: BoxShape.circle,
                 ),
                 child: _svg('avatar', 16),
@@ -333,7 +334,7 @@ class _QuickAction extends StatelessWidget {
             child: Text(label, maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                    color: Color(0xFFE5E5E5),
+                    color: BinancePalette.textPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w500)),
           ),
@@ -416,7 +417,7 @@ class _RewardsCard extends StatelessWidget {
     width: active ? 14 : 6,
     height: 5,
     decoration: BoxDecoration(
-      color: active ? _white : const Color(0xFF52525B),
+      color: active ? _white : BinancePalette.textDisabled,
       borderRadius: BorderRadius.circular(3),
     ),
   );
@@ -451,7 +452,7 @@ class _DepositMethod extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               const Text('USD',
-                  style: TextStyle(color: Color(0xFFD4D4D4), fontSize: 12,
+                  style: TextStyle(color: BinancePalette.textSecondary, fontSize: 12,
                       fontWeight: FontWeight.bold)),
             ],
           ),
@@ -688,7 +689,7 @@ class _MarketRow extends StatelessWidget {
               children: [
                 Text(price, maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Color(0xFFF1F1F1),
+                    style: const TextStyle(color: BinancePalette.textPrimary,
                         fontSize: 12.5, fontWeight: FontWeight.w600)),
                 Text(kes, maxLines: 1,
                     overflow: TextOverflow.ellipsis,

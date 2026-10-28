@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/presentation/app_shell.dart';
+import 'core/theme/binance_palette.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +40,18 @@ class BinanceCloneApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF181A20),
+        scaffoldBackgroundColor: BinancePalette.canvas,
+        canvasColor: BinancePalette.canvas,
+        cardColor: BinancePalette.surface,
+        dividerColor: BinancePalette.divider,
+        primaryColor: BinancePalette.yellow,
+        colorScheme: const ColorScheme.dark(
+          primary: BinancePalette.yellow,
+          onPrimary: BinancePalette.canvas,
+          surface: BinancePalette.surface,
+          onSurface: BinancePalette.textPrimary,
+          error: BinancePalette.red,
+        ),
         useMaterial3: true,
         fontFamily: 'Roboto',
       ),

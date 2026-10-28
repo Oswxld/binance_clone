@@ -8,13 +8,14 @@ import 'portfolio_sparkline.dart';
 import '../../home/domain/home_balance.dart';
 import '../../home/presentation/home_provider.dart';
 import '../../../core/utils/wallet_amount_formatter.dart';
+import '../../../core/theme/binance_palette.dart';
 
-const _bg = Color(0xFF121318);
-const _surface = Color(0xFF181A20);
-const _border = Color(0xFF23272E);
-const _muted = Color(0xFF848E9C);
-const _white = Color(0xFFEAECEF);
-const _yellow = Color(0xFFFCD535);
+const _bg = BinancePalette.canvas;
+const _surface = BinancePalette.surface;
+const _border = BinancePalette.border;
+const _muted = BinancePalette.textMuted;
+const _white = BinancePalette.textPrimary;
+const _yellow = BinancePalette.yellow;
 
 Widget _icon(String name, double size) =>
     SvgPicture.asset('assets/svgs/' + name + '.svg',
@@ -246,7 +247,7 @@ class _ActionButton extends StatelessWidget {
           height: 41,
           width: 50,
           decoration: BoxDecoration(
-            color: const Color(0xFF1E2329),
+            color: BinancePalette.raised,
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
@@ -318,7 +319,7 @@ class _AllocationCard extends StatelessWidget {
                   if (!allocation.hasValuation) {
                     // No holdings or no KES rates: show a neutral bar,
                     // never fake the mockup's 78/22 allocation.
-                    return const ColoredBox(color: Color(0xFF2B313A));
+                    return const ColoredBox(color: BinancePalette.raised);
                   }
                   // Tween just the USDT portion. BTC occupies the remainder,
                   // keeping both proportions accurate as Realtime updates arrive.

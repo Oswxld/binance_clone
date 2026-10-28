@@ -5,6 +5,7 @@ import '../../features/assets/presentation/assets_screen.dart';
 import '../../features/invest/presentation/invest_screen.dart';
 import '../../features/markets/presentation/markets_screen.dart';
 import 'app_bottom_navigation.dart';
+import '../theme/binance_palette.dart';
 
 /// The bottom navigation belongs to the application shell, not individual tabs.
 /// Switching tabs only replaces the page content, preserving navigation layout
@@ -22,7 +23,7 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF181A20),
+      backgroundColor: BinancePalette.canvas,
       body: SafeArea(
         top: true,
         bottom: true,

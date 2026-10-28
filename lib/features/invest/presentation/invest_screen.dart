@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/theme/binance_palette.dart';
+
 // Presentation-only values from the supplied Invest mockup.
 // Earn products, crypto quotes, and stocks are static examples for now.
-const _background = Color(0xFF181A20);
-const _card = Color(0xFF1E2026);
-const _muted = Color(0xFF848E9C);
-const _white = Color(0xFFEAECEF);
-const _green = Color(0xFF0ECB81);
-const _red = Color(0xFFF6465D);
+const _background = BinancePalette.canvas;
+const _card = BinancePalette.surface;
+const _muted = BinancePalette.textMuted;
+const _white = BinancePalette.textPrimary;
+const _green = BinancePalette.green;
+const _red = BinancePalette.red;
 
 Widget _investSvg(String name, double size) => SvgPicture.asset(
       'assets/svgs/' + name + '.svg',
@@ -240,7 +242,7 @@ class _EarnAssetRow extends StatelessWidget {
             horizontal: 13, vertical: 9,
           ),
           decoration: BoxDecoration(
-            color: const Color(0xFF2B313A),
+            color: BinancePalette.raised,
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Text('Subscribe', style: TextStyle(

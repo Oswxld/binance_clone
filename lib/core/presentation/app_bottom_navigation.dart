@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../theme/binance_palette.dart';
+
 /// Tabs currently implemented in the demo. Other visible icons remain visual
 /// placeholders until their corresponding features are built.
 enum AppTab { home, markets, invest, assets }
@@ -15,9 +17,9 @@ class AppBottomNavigation extends StatelessWidget {
   final AppTab selected;
   final ValueChanged<AppTab> onSelect;
 
-  static const _background = Color(0xFF181A20);
-  static const _muted = Color(0xFF848E9C);
-  static const _yellow = Color(0xFFFCD535);
+  static const _background = BinancePalette.canvas;
+  static const _muted = BinancePalette.textMuted;
+  static const _yellow = BinancePalette.yellow;
 
   Widget _icon(String asset, double size) {
     return SvgPicture.asset(
@@ -38,7 +40,7 @@ class AppBottomNavigation extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(10, 9, 10, 8),
       decoration: const BoxDecoration(
         color: _background,
-        border: Border(top: BorderSide(color: Color(0xFF22262F))),
+        border: Border(top: BorderSide(color: BinancePalette.border)),
       ),
       child: Row(
         children: [
