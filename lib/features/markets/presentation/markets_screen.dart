@@ -543,7 +543,7 @@ class _MarketCoinRow extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: coin.iconColor,
+        color: isSol ? null : coin.iconColor,
         gradient: isSol
             ? const LinearGradient(
                 begin: Alignment.bottomLeft,
