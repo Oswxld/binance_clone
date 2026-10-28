@@ -17,6 +17,8 @@ Future<void> main() async {
     throw StateError('Add SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY to .env.');
   }
   await Supabase.initialize(url: url, publishableKey: key);
+  // The supplied design includes its own status indicators and home bar.
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Color(0xFF181A20),
     statusBarIconBrightness: Brightness.light,
