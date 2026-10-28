@@ -8,7 +8,6 @@ import 'home_provider.dart';
 // Exact source palette from the supplied Tailwind design.
 const _bg = Color(0xFF181A20);
 const _card = Color(0xFF202630);
-const _soft = Color(0xFF1E2329);
 const _border = Color(0xFF2B313A);
 const _yellow = Color(0xFFFCD535);
 const _green = Color(0xFF0ECB81);
@@ -696,7 +695,7 @@ class _MarketRow extends StatelessWidget {
                   ),
                   child: icon != null
                       ? _svg(icon!, 15)
-                      : Text(symbol ?? name.characters.first,
+                      : Text(symbol ?? name.substring(0, 1),
                           style: const TextStyle(
                               color: _white, fontSize: 13,
                               fontWeight: FontWeight.bold)),
