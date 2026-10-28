@@ -1,30 +1,24 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:binance/main.dart';
+import 'package:binance/features/home/domain/home_balance.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('USDT and BTC holdings are both included in KES total', () {
+    final result = HomeBalance.valued(
+      usdt: 2.5,
+      btc: 0.01,
+      usdtKes: 130,
+      btcKes: 10000000,
+    );
+    expect(result.totalKes, 100325);
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  test('zero balances yield zero valuation', () {
+    final result = HomeBalance.valued(
+      usdt: 0,
+      btc: 0,
+      usdtKes: 130,
+      btcKes: 10000000,
+    );
+    expect(result.totalKes, 0);
   });
 }
