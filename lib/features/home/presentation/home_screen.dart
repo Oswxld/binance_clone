@@ -495,7 +495,779 @@ class _DepositMethod extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                     color: _yellow, shape: BoxShape.circle),
-                child: const Text('\u0024',
+                child: const Text(r'
+                    style: TextStyle(color: _bg, fontSize: 11,
+                        fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(width: 6),
+              const Text('USD',
+                  style: TextStyle(color: Color(0xFFD4D4D4), fontSize: 12,
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+            color: const Color(0xFF113B30),
+            child: const Text('Deposit',
+                style: TextStyle(color: _green, fontSize: 10)),
+          ),
+          const SizedBox(height: 4),
+          const Text('Bank Transfer (SWIFT)',
+              style: TextStyle(color: _white, fontSize: 12,
+                  fontWeight: FontWeight.w600)),
+          const Spacer(),
+          Row(
+            children: [
+              _svg('bank', 20),
+              const Spacer(),
+              Container(width: 12, height: 4,
+                  decoration: BoxDecoration(color: _white,
+                      borderRadius: BorderRadius.circular(4))),
+              const SizedBox(width: 4),
+              Container(width: 4, height: 4,
+                  decoration: BoxDecoration(color: _muted,
+                      borderRadius: BorderRadius.circular(4))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MarketsSection extends StatelessWidget {
+  const _MarketsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _card,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 9),
+            child: Row(
+              children: [
+                _marketTab('Favorites'),
+                const SizedBox(width: 12),
+                const Column(
+                  children: [
+                    Text('Hot', style: TextStyle(
+                        color: _white, fontSize: 13,
+                        fontWeight: FontWeight.w700)),
+                    SizedBox(height: 4),
+                    SizedBox(width: 24, height: 2,
+                        child: ColoredBox(color: _yellow)),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                _marketTab('TradFi'),
+                const SizedBox(width: 12),
+                _marketTab('Alpha'),
+                const SizedBox(width: 12),
+                _marketTab('New'),
+                const Spacer(),
+                _svg('filter', 16),
+              ],
+            ),
+          ),
+          const Divider(color: _border, height: 1),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
+            child: Row(
+              children: [
+                Text('Crypto',
+                  style: TextStyle(color: _white, fontSize: 12,
+                      fontWeight: FontWeight.bold)),
+                SizedBox(width: 16),
+                Text('Futures',
+                    style: TextStyle(color: _muted, fontSize: 12)),
+                SizedBox(width: 16),
+                Text('Stocks',
+                    style: TextStyle(color: _muted, fontSize: 12)),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 1, 12, 7),
+            child: Row(
+              children: [
+                Expanded(child: Text('Name',
+                    style: TextStyle(color: _muted, fontSize: 11))),
+                Expanded(child: Text('Last Price',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: _muted, fontSize: 11))),
+                Expanded(child: Text('24h chg%',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: _muted, fontSize: 11))),
+              ],
+            ),
+          ),
+          const _MarketRow(
+            name: 'BNB', caption: 'BNB', icon: 'bnb', emoji: '🔥',
+            iconBg: _yellow, price: '751.79',
+            kes: 'KSh 97,785.33', change: '+0.49%',
+          ),
+          const _MarketRow(
+            name: 'BTC', caption: 'Bitcoin', symbol: '₿', emoji: '🔥',
+            iconBg: Color(0xFFF7931A), price: '81,147.38',
+            kes: 'KSh 10,554,839.72', change: '+0.65%',
+          ),
+          const _MarketRow(
+            name: 'ETH', caption: 'Ethereum', icon: 'eth', emoji: '🔥',
+            iconBg: Color(0xFF627EEA), price: '2,357.43',
+            kes: 'KSh 306,630.92', change: '+0.69%',
+          ),
+          const _MarketRow(
+            name: 'PEPE', caption: 'Pepe', symbol: '🐸',
+            iconBg: Color(0xFF398039), price: '0.00000489',
+            kes: 'KSh 0.00063604', change: '+9.15%',
+          ),
+          const _MarketRow(
+            name: 'SOL', caption: 'Solana', icon: 'sol',
+            iconBg: Color(0xFF141414), price: '102.12',
+            kes: 'KSh 13,282.75', change: '+1.03%',
+          ),
+          const SizedBox(height: 4),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Text('View More',
+                style: TextStyle(color: _muted, fontSize: 12,
+                    fontWeight: FontWeight.w500)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _marketTab(String title) => Text(
+    title,
+    style: const TextStyle(color: _muted, fontSize: 11.5,
+        fontWeight: FontWeight.w500),
+  );
+}
+
+class _MarketRow extends StatelessWidget {
+  const _MarketRow({
+    required this.name,
+    required this.caption,
+    required this.iconBg,
+    required this.price,
+    required this.kes,
+    required this.change,
+    this.icon,
+    this.symbol,
+    this.emoji,
+  });
+
+  final String name;
+  final String caption;
+  final String? icon;
+  final String? symbol;
+  final String? emoji;
+  final Color iconBg;
+  final String price;
+  final String kes;
+  final String change;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 25,
+                  height: 25,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: iconBg,
+                    border: name == 'SOL'
+                        ? Border.all(color: _border) : null,
+                  ),
+                  child: icon != null
+                      ? _svg(icon!, 15)
+                      : Text(symbol ?? name.substring(0, 1),
+                          style: const TextStyle(
+                              color: _white, fontSize: 13,
+                              fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: _white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13)),
+                          ),
+                          if (emoji != null) ...[
+                            const SizedBox(width: 3),
+                            Text(emoji!, style: const TextStyle(fontSize: 11)),
+                          ],
+                        ],
+                      ),
+                      Text(caption,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: _muted, fontSize: 10)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(price, maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Color(0xFFF1F1F1),
+                        fontSize: 12.5, fontWeight: FontWeight.w600)),
+                Text(kes, maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: _muted, fontSize: 10)),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 64),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 9, vertical: 7),
+                decoration: BoxDecoration(
+                  color: _green,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(change,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.black,
+                        fontSize: 11, fontWeight: FontWeight.w700)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommunityTabs extends StatelessWidget {
+  const _CommunityTabs();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Text('Discover',
+            style: TextStyle(color: _muted, fontSize: 12)),
+        const SizedBox(width: 15),
+        const Text('Following',
+            style: TextStyle(color: _white, fontSize: 13,
+                fontWeight: FontWeight.w700)),
+        const SizedBox(width: 15),
+        const Text('Stocks',
+            style: TextStyle(color: _muted, fontSize: 12)),
+        const SizedBox(width: 15),
+        const Text('Leaderboard',
+            style: TextStyle(color: _muted, fontSize: 12)),
+        const Spacer(),
+        _svg('feed_expand', 14),
+      ],
+    );
+  }
+}
+
+class _AssistantBubble extends StatelessWidget {
+  const _AssistantBubble();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 29,
+      height: 29,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: _yellow,
+        borderRadius: BorderRadius.horizontal(
+          left: Radius.circular(20),
+        ),
+      ),
+      child: const Text('😊', style: TextStyle(fontSize: 12)),
+    );
+  }
+}
+
+class _BottomNavigation extends StatelessWidget {
+  const _BottomNavigation();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 13, 10, 5),
+      decoration: const BoxDecoration(
+        color: _bg,
+        border: Border(top: BorderSide(color: _border, width: 0.7)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              _bottomItem('Home', 'home', true),
+              _bottomItem('Markets', 'markets', false),
+              Expanded(
+                child: Center(
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                        color: _yellow, shape: BoxShape.circle),
+                    child: _svg('trade', 24),
+                  ),
+                ),
+              ),
+              _bottomItem('Invest', 'invest', false),
+              _bottomItem('Assets', 'assets', false),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: 112,
+            height: 4,
+            decoration: BoxDecoration(
+              color: const Color(0xFF52525B),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bottomItem(String title, String asset, bool active) {
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _svg(asset, 20),
+          const SizedBox(height: 7),
+          Text(title,
+              style: TextStyle(
+                  color: active ? _yellow : _muted,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+}
+,
+                    style: TextStyle(color: _bg, fontSize: 11,
+                        fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(width: 6),
+              const Text('USD',
+                  style: TextStyle(color: Color(0xFFD4D4D4), fontSize: 12,
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+            color: const Color(0xFF113B30),
+            child: const Text('Deposit',
+                style: TextStyle(color: _green, fontSize: 10)),
+          ),
+          const SizedBox(height: 4),
+          const Text('Bank Transfer (SWIFT)',
+              style: TextStyle(color: _white, fontSize: 12,
+                  fontWeight: FontWeight.w600)),
+          const Spacer(),
+          Row(
+            children: [
+              _svg('bank', 20),
+              const Spacer(),
+              Container(width: 12, height: 4,
+                  decoration: BoxDecoration(color: _white,
+                      borderRadius: BorderRadius.circular(4))),
+              const SizedBox(width: 4),
+              Container(width: 4, height: 4,
+                  decoration: BoxDecoration(color: _muted,
+                      borderRadius: BorderRadius.circular(4))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MarketsSection extends StatelessWidget {
+  const _MarketsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _card,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 9),
+            child: Row(
+              children: [
+                _marketTab('Favorites'),
+                const SizedBox(width: 12),
+                const Column(
+                  children: [
+                    Text('Hot', style: TextStyle(
+                        color: _white, fontSize: 13,
+                        fontWeight: FontWeight.w700)),
+                    SizedBox(height: 4),
+                    SizedBox(width: 24, height: 2,
+                        child: ColoredBox(color: _yellow)),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                _marketTab('TradFi'),
+                const SizedBox(width: 12),
+                _marketTab('Alpha'),
+                const SizedBox(width: 12),
+                _marketTab('New'),
+                const Spacer(),
+                _svg('filter', 16),
+              ],
+            ),
+          ),
+          const Divider(color: _border, height: 1),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
+            child: Row(
+              children: [
+                Text('Crypto',
+                  style: TextStyle(color: _white, fontSize: 12,
+                      fontWeight: FontWeight.bold)),
+                SizedBox(width: 16),
+                Text('Futures',
+                    style: TextStyle(color: _muted, fontSize: 12)),
+                SizedBox(width: 16),
+                Text('Stocks',
+                    style: TextStyle(color: _muted, fontSize: 12)),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 1, 12, 7),
+            child: Row(
+              children: [
+                Expanded(child: Text('Name',
+                    style: TextStyle(color: _muted, fontSize: 11))),
+                Expanded(child: Text('Last Price',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: _muted, fontSize: 11))),
+                Expanded(child: Text('24h chg%',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: _muted, fontSize: 11))),
+              ],
+            ),
+          ),
+          const _MarketRow(
+            name: 'BNB', caption: 'BNB', icon: 'bnb', emoji: '🔥',
+            iconBg: _yellow, price: '751.79',
+            kes: 'KSh 97,785.33', change: '+0.49%',
+          ),
+          const _MarketRow(
+            name: 'BTC', caption: 'Bitcoin', symbol: '₿', emoji: '🔥',
+            iconBg: Color(0xFFF7931A), price: '81,147.38',
+            kes: 'KSh 10,554,839.72', change: '+0.65%',
+          ),
+          const _MarketRow(
+            name: 'ETH', caption: 'Ethereum', icon: 'eth', emoji: '🔥',
+            iconBg: Color(0xFF627EEA), price: '2,357.43',
+            kes: 'KSh 306,630.92', change: '+0.69%',
+          ),
+          const _MarketRow(
+            name: 'PEPE', caption: 'Pepe', symbol: '🐸',
+            iconBg: Color(0xFF398039), price: '0.00000489',
+            kes: 'KSh 0.00063604', change: '+9.15%',
+          ),
+          const _MarketRow(
+            name: 'SOL', caption: 'Solana', icon: 'sol',
+            iconBg: Color(0xFF141414), price: '102.12',
+            kes: 'KSh 13,282.75', change: '+1.03%',
+          ),
+          const SizedBox(height: 4),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Text('View More',
+                style: TextStyle(color: _muted, fontSize: 12,
+                    fontWeight: FontWeight.w500)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _marketTab(String title) => Text(
+    title,
+    style: const TextStyle(color: _muted, fontSize: 11.5,
+        fontWeight: FontWeight.w500),
+  );
+}
+
+class _MarketRow extends StatelessWidget {
+  const _MarketRow({
+    required this.name,
+    required this.caption,
+    required this.iconBg,
+    required this.price,
+    required this.kes,
+    required this.change,
+    this.icon,
+    this.symbol,
+    this.emoji,
+  });
+
+  final String name;
+  final String caption;
+  final String? icon;
+  final String? symbol;
+  final String? emoji;
+  final Color iconBg;
+  final String price;
+  final String kes;
+  final String change;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 25,
+                  height: 25,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: iconBg,
+                    border: name == 'SOL'
+                        ? Border.all(color: _border) : null,
+                  ),
+                  child: icon != null
+                      ? _svg(icon!, 15)
+                      : Text(symbol ?? name.substring(0, 1),
+                          style: const TextStyle(
+                              color: _white, fontSize: 13,
+                              fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: _white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13)),
+                          ),
+                          if (emoji != null) ...[
+                            const SizedBox(width: 3),
+                            Text(emoji!, style: const TextStyle(fontSize: 11)),
+                          ],
+                        ],
+                      ),
+                      Text(caption,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: _muted, fontSize: 10)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(price, maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Color(0xFFF1F1F1),
+                        fontSize: 12.5, fontWeight: FontWeight.w600)),
+                Text(kes, maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: _muted, fontSize: 10)),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 64),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 9, vertical: 7),
+                decoration: BoxDecoration(
+                  color: _green,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(change,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.black,
+                        fontSize: 11, fontWeight: FontWeight.w700)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommunityTabs extends StatelessWidget {
+  const _CommunityTabs();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Text('Discover',
+            style: TextStyle(color: _muted, fontSize: 12)),
+        const SizedBox(width: 15),
+        const Text('Following',
+            style: TextStyle(color: _white, fontSize: 13,
+                fontWeight: FontWeight.w700)),
+        const SizedBox(width: 15),
+        const Text('Stocks',
+            style: TextStyle(color: _muted, fontSize: 12)),
+        const SizedBox(width: 15),
+        const Text('Leaderboard',
+            style: TextStyle(color: _muted, fontSize: 12)),
+        const Spacer(),
+        _svg('feed_expand', 14),
+      ],
+    );
+  }
+}
+
+class _AssistantBubble extends StatelessWidget {
+  const _AssistantBubble();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 29,
+      height: 29,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: _yellow,
+        borderRadius: BorderRadius.horizontal(
+          left: Radius.circular(20),
+        ),
+      ),
+      child: const Text('😊', style: TextStyle(fontSize: 12)),
+    );
+  }
+}
+
+class _BottomNavigation extends StatelessWidget {
+  const _BottomNavigation();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 13, 10, 5),
+      decoration: const BoxDecoration(
+        color: _bg,
+        border: Border(top: BorderSide(color: _border, width: 0.7)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              _bottomItem('Home', 'home', true),
+              _bottomItem('Markets', 'markets', false),
+              Expanded(
+                child: Center(
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                        color: _yellow, shape: BoxShape.circle),
+                    child: _svg('trade', 24),
+                  ),
+                ),
+              ),
+              _bottomItem('Invest', 'invest', false),
+              _bottomItem('Assets', 'assets', false),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: 112,
+            height: 4,
+            decoration: BoxDecoration(
+              color: const Color(0xFF52525B),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bottomItem(String title, String asset, bool active) {
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _svg(asset, 20),
+          const SizedBox(height: 7),
+          Text(title,
+              style: TextStyle(
+                  color: active ? _yellow : _muted,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+}
+,
                     style: TextStyle(color: _bg, fontSize: 11,
                         fontWeight: FontWeight.bold)),
               ),
