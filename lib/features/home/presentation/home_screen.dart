@@ -40,12 +40,12 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: _bg,
       body: SafeArea(
-        bottom: false,
+        top: true,
+        bottom: true,
         child: Stack(
           children: [
             Column(
               children: [
-                const _StatusStrip(),
                 const _TopNavigation(),
                 Expanded(
                   child: RefreshIndicator(
@@ -92,52 +92,11 @@ class HomeScreen extends ConsumerWidget {
             ),
             const Positioned(
               right: 0,
-              bottom: 100,
+              bottom: 78,
               child: _AssistantBubble(),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _StatusStrip extends StatelessWidget {
-  const _StatusStrip();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 9, 16, 5),
-      child: Row(
-        children: [
-          const Text('22:13',
-              style: TextStyle(fontSize: 14, color: _white,
-                  fontWeight: FontWeight.w600, letterSpacing: -0.2)),
-          const SizedBox(width: 8),
-          _svg('cloud', 14),
-          const SizedBox(width: 5),
-          _svg('whatsapp', 14),
-          const SizedBox(width: 5),
-          _svg('tiktok', 12),
-          const Spacer(),
-          _svg('wifi', 14),
-          const SizedBox(width: 6),
-          _svg('do_not_disturb', 14),
-          const SizedBox(width: 6),
-          Container(
-            height: 15,
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFA3A3A3)),
-              borderRadius: BorderRadius.circular(2),
-            ),
-            alignment: Alignment.center,
-            child: const Text('18',
-                style: TextStyle(color: _white, fontSize: 10,
-                    fontWeight: FontWeight.bold)),
-          ),
-        ],
       ),
     );
   }
@@ -850,15 +809,7 @@ class _BottomNavigation extends StatelessWidget {
               _bottomItem('Assets', 'assets', false),
             ],
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: 112,
-            height: 4,
-            decoration: BoxDecoration(
-              color: const Color(0xFF52525B),
-              borderRadius: BorderRadius.circular(3),
-            ),
-          ),
+
         ],
       ),
     );
