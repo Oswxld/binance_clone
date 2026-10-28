@@ -495,7 +495,7 @@ class _DepositMethod extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                     color: _yellow, shape: BoxShape.circle),
-                child: const Text('\
+                child: const Text('\u0024',
                     style: TextStyle(color: _bg, fontSize: 11,
                         fontWeight: FontWeight.bold)),
               ),
