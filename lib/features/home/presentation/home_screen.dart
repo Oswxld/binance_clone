@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -174,8 +176,44 @@ class _TopNavigation extends StatelessWidget {
   }
 }
 
-class _TrendingSearch extends StatelessWidget {
+class _TrendingSearch extends StatefulWidget {
   const _TrendingSearch();
+
+  @override
+  State<_TrendingSearch> createState() => _TrendingSearchState();
+}
+
+class _TrendingSearchState extends State<_TrendingSearch> {
+  // UI sample headlines; these are not a live news feed.
+  static const _headlines = <String>[
+    '🔥 ETC is trending now',
+    'FECEx beats Q4',
+    '📈 Explore today’s market movers',
+    '📰 Discover the latest market insights',
+  ];
+
+  final PageController _controller = PageController();
+  Timer? _timer;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 3600), (_) {
+      if (!mounted || !_controller.hasClients) return;
+      _controller.nextPage(
+        duration: const Duration(milliseconds: 470),
+        curve: Curves.easeInOutCubic,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,12 +228,32 @@ class _TrendingSearch extends StatelessWidget {
         children: [
           _svg('search', 16),
           const SizedBox(width: 9),
-          const Text('🔥', style: TextStyle(fontSize: 13)),
-          const SizedBox(width: 4),
-          const Flexible(
-            child: Text('ETC is trending now',
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: _muted, fontSize: 13)),
+          Expanded(
+            child: ClipRect(
+              child: PageView.builder(
+                key: const Key('home-news-ticker'),
+                controller: _controller,
+                scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) => _currentPage = index,
+                itemBuilder: (context, index) {
+                  final headline = _headlines[index % _headlines.length];
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      headline,
+                      key: ValueKey('news-headline-$index'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: _muted,
+                        fontSize: 13,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),
@@ -344,8 +402,43 @@ class _QuickAction extends StatelessWidget {
   }
 }
 
-class _RewardsCard extends StatelessWidget {
+class _RewardsCard extends StatefulWidget {
   const _RewardsCard();
+
+  @override
+  State<_RewardsCard> createState() => _RewardsCardState();
+}
+
+class _RewardsCardState extends State<_RewardsCard> {
+  static const _offers = <String>[
+    'Trade 10 USDT to get 2 USDT Token Voucher',
+    'Trade 10 USDT of bStocks to get 1 USDT Token Voucher',
+  ];
+
+  final PageController _controller = PageController();
+  Timer? _timer;
+  int _selectedPage = 0;
+  bool _touching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 4200), (_) {
+      if (!mounted || !_controller.hasClients || _touching) return;
+      _controller.animateToPage(
+        (_selectedPage + 1) % _offers.length,
+        duration: const Duration(milliseconds: 570),
+        curve: Curves.easeInOutCubic,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -359,72 +452,129 @@ class _RewardsCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('Get Rewards',
-                  style: TextStyle(color: _muted, fontSize: 13,
-                      fontWeight: FontWeight.w500)),
+              const Text(
+                'Get Rewards',
+                style: TextStyle(
+                  color: _muted,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               const Spacer(),
               _svg('dismiss', 14),
             ],
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Container(
-                width: 34,
-                height: 34,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF03A66D),
-                  shape: BoxShape.circle,
-                ),
-                child: _svg('rewards', 20),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 60,
+            child: Listener(
+              onPointerDown: (_) => _touching = true,
+              onPointerUp: (_) => _touching = false,
+              onPointerCancel: (_) => _touching = false,
+              child: PageView.builder(
+                key: const Key('home-rewards-carousel'),
+                controller: _controller,
+                itemCount: _offers.length,
+                onPageChanged: (index) => setState(() {
+                  _selectedPage = index;
+                }),
+                itemBuilder: (context, index) {
+                  return Row(
+                    children: [
+                      Container(
+                        width: 34,
+                        height: 34,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF03A66D),
+                          shape: BoxShape.circle,
+                        ),
+                        child: _svg('rewards', 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _offers[index],
+                          key: ValueKey('reward-offer-$index'),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: _white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            height: 1.25,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _border,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Go',
+                          style: TextStyle(
+                            color: _white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text('Trade 10 USDT to get 2 USDT Token Voucher',
-                    style: TextStyle(color: _white, fontSize: 12,
-                        fontWeight: FontWeight.w600, height: 1.3)),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _border,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text('Go',
-                    style: TextStyle(color: _white, fontSize: 12,
-                        fontWeight: FontWeight.w500)),
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _pageDot(false), const SizedBox(width: 4),
-              _pageDot(false), const SizedBox(width: 4),
-              _pageDot(true),
+              for (var index = 0; index < _offers.length; index++) ...[
+                if (index > 0) const SizedBox(width: 5),
+                Container(
+                  key: ValueKey(
+                    'rewards-dot-$index-${_selectedPage == index ? 'active' : 'inactive'}',
+                  ),
+                  width: _selectedPage == index ? 14 : 6,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: _selectedPage == index
+                        ? _white
+                        : BinancePalette.textDisabled,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              ],
             ],
           ),
         ],
       ),
     );
   }
-
-  Widget _pageDot(bool active) => Container(
-    width: active ? 14 : 6,
-    height: 5,
-    decoration: BoxDecoration(
-      color: active ? _white : BinancePalette.textDisabled,
-      borderRadius: BorderRadius.circular(3),
-    ),
-  );
 }
 
-class _DepositMethod extends StatelessWidget {
+class _DepositMethod extends StatefulWidget {
   const _DepositMethod();
+
+  @override
+  State<_DepositMethod> createState() => _DepositMethodState();
+}
+
+class _DepositMethodState extends State<_DepositMethod> {
+  final PageController _controller = PageController();
+  int _selectedPage = 0;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -442,44 +592,118 @@ class _DepositMethod extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 20, height: 20,
+                width: 20,
+                height: 20,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
-                    color: _yellow, shape: BoxShape.circle),
-                child: Text(String.fromCharCode(36),
-                    style: TextStyle(color: _bg, fontSize: 11,
-                        fontWeight: FontWeight.bold)),
+                  color: _yellow,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  String.fromCharCode(36),
+                  style: const TextStyle(
+                    color: _bg,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
               const SizedBox(width: 6),
-              const Text('USD',
-                  style: TextStyle(color: BinancePalette.textSecondary, fontSize: 12,
-                      fontWeight: FontWeight.bold)),
+              const Text(
+                'USD',
+                style: TextStyle(
+                  color: BinancePalette.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-            color: const Color(0xFF113B30),
-            child: const Text('Deposit',
-                style: TextStyle(color: _green, fontSize: 10)),
+          const SizedBox(height: 9),
+          Expanded(
+            child: PageView(
+              key: const Key('home-bank-transfer-carousel'),
+              controller: _controller,
+              onPageChanged: (index) => setState(() {
+                _selectedPage = index;
+              }),
+              children: const [
+                _BankTransferSlide(isWithdraw: false),
+                _BankTransferSlide(isWithdraw: true),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          const Text('Bank Transfer (SWIFT)',
-              style: TextStyle(color: _white, fontSize: 12,
-                  fontWeight: FontWeight.w600)),
-          const Spacer(),
           Row(
             children: [
               _svg('bank', 20),
               const Spacer(),
-              Container(width: 12, height: 4,
-                  decoration: BoxDecoration(color: _white,
-                      borderRadius: BorderRadius.circular(4))),
-              const SizedBox(width: 4),
-              Container(width: 4, height: 4,
-                  decoration: BoxDecoration(color: _muted,
-                      borderRadius: BorderRadius.circular(4))),
+              for (var index = 0; index < 2; index++) ...[
+                if (index > 0) const SizedBox(width: 4),
+                Container(
+                  key: ValueKey(
+                    'bank-dot-$index-${_selectedPage == index ? 'active' : 'inactive'}',
+                  ),
+                  width: _selectedPage == index ? 12 : 4,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: _selectedPage == index ? _white : _muted,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BankTransferSlide extends StatelessWidget {
+  const _BankTransferSlide({required this.isWithdraw});
+
+  final bool isWithdraw;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            key: ValueKey(
+              isWithdraw ? 'bank-withdraw-badge' : 'bank-deposit-badge',
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 6,
+              vertical: 3,
+            ),
+            decoration: BoxDecoration(
+              color: isWithdraw
+                  ? const Color(0xFF3D202A)
+                  : const Color(0xFF113B30),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Text(
+              isWithdraw ? 'Withdraw' : 'Deposit',
+              style: TextStyle(
+                color: isWithdraw ? _red : _green,
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Text(
+            'Bank Transfer (SWIFT)',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: _white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
