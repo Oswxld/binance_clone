@@ -1,4 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:binance/features/home/domain/wallet_display_currency.dart';
+import 'package:binance/features/home/presentation/display_currency_picker.dart';
+import 'package:binance/features/home/presentation/home_provider.dart';
 import 'package:binance/core/theme/binance_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:binance/features/assets/presentation/select_currency_screen.dart';
@@ -11,6 +15,68 @@ import 'package:binance/core/utils/wallet_amount_formatter.dart';
 import 'package:binance/features/assets/domain/wallet_allocation.dart';
 
 void main() {
+  test('selecting a denomination converts KES across all five units', () {
+    final balance = HomeBalance.valued(
+      usdt: 2,
+      btc: 0.01,
+      usdtKes: 130,
+      btcKes: 10000000,
+      ethKes: 300000,
+      bnbKes: 100000,
+    );
+    expect(balance.totalKes, 100260);
+    expect(balance.valueIn(balance.totalKes, WalletDisplayCurrency.kes), 100260);
+    expect(balance.valueIn(balance.totalKes, WalletDisplayCurrency.usdt),
+        closeTo(771.23076923, 0.000001));
+    expect(balance.valueIn(balance.totalKes, WalletDisplayCurrency.btc),
+        closeTo(0.010026, 1e-9));
+    expect(balance.valueIn(balance.totalKes, WalletDisplayCurrency.eth),
+        closeTo(0.3342, 1e-9));
+    expect(balance.valueIn(balance.totalKes, WalletDisplayCurrency.bnb),
+        closeTo(1.0026, 1e-9));
+    // The wallet's actual token quantities are never converted or changed.
+    expect(balance.usdt, 2);
+    expect(balance.btc, 0.01);
+  });
+
+  test('missing non-wallet quote is unavailable, not a fabricated rate', () {
+    final balance = HomeBalance.valued(
+      usdt: 3, btc: 0, usdtKes: 130, btcKes: 10000000,
+    );
+    expect(balance.valueIn(balance.totalKes, WalletDisplayCurrency.eth), isNull);
+    expect(formatWalletDisplayValue(null, WalletDisplayCurrency.eth), '--');
+    expect(formatWalletDisplayValue(3.19, WalletDisplayCurrency.usdt), '3.19');
+    expect(formatWalletAssetValue(3.09, WalletDisplayCurrency.usdt),
+        '3.09 USDT');
+    expect(formatWalletDisplayValue(426.87, WalletDisplayCurrency.kes),
+        'KSh426.87');
+    expect(formatWalletDisplayValue(0.00001234, WalletDisplayCurrency.btc),
+        '0.00001234');
+  });
+
+  testWidgets('currency dropdown has all five options and remembers choice',
+      (tester) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: container,
+      child: const MaterialApp(
+        home: Scaffold(body: Center(
+          child: DisplayCurrencyPicker(child: Text('Choose unit')),
+        )),
+      ),
+    ));
+    expect(container.read(displayCurrencyProvider), WalletDisplayCurrency.kes);
+    await tester.tap(find.byKey(const Key('display-currency-picker')));
+    await tester.pumpAndSettle();
+    for (final code in const ['BTC', 'ETH', 'BNB', 'USDT', 'KES']) {
+      expect(find.text(code), findsOneWidget);
+    }
+    await tester.tap(find.text('USDT'));
+    await tester.pumpAndSettle();
+    expect(container.read(displayCurrencyProvider), WalletDisplayCurrency.usdt);
+  });
+
   test('shared dark palette uses lighter blue-charcoal surfaces on all tabs', () {
     expect(BinancePalette.canvas, const Color(0xFF1F2630));
     expect(BinancePalette.surface, const Color(0xFF272F3A));
