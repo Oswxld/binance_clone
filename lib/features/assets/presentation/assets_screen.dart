@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../domain/wallet_allocation.dart';
+import 'select_currency_screen.dart';
 import 'portfolio_sparkline.dart';
 
 import '../../home/domain/home_balance.dart';
@@ -223,45 +224,69 @@ class _AssetActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
-        Expanded(child: _ActionButton('Add Funds', 'asset_add_funds')),
-        Expanded(child: _ActionButton('Send', 'asset_send')),
-        Expanded(child: _ActionButton('Transfer', 'asset_transfer')),
-        Expanded(child: _ActionButton('Earn', 'asset_earn')),
+        Expanded(
+          child: _ActionButton(
+            'Add Funds',
+            'asset_add_funds',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const SelectCurrencyScreen(),
+              ),
+            ),
+          ),
+        ),
+        const Expanded(child: _ActionButton('Send', 'asset_send')),
+        const Expanded(child: _ActionButton('Transfer', 'asset_transfer')),
+        const Expanded(child: _ActionButton('Earn', 'asset_earn')),
       ],
     );
   }
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton(this.label, this.svg);
+  const _ActionButton(this.label, this.svg, {this.onTap});
   final String label;
   final String svg;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: 41,
-          width: 50,
-          decoration: BoxDecoration(
-            color: BinancePalette.raised,
-            borderRadius: BorderRadius.circular(10),
+    return Semantics(
+      button: onTap != null,
+      label: label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            children: [
+              Container(
+                height: 41,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: BinancePalette.raised,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: _icon(svg, 23),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                maxLines: 1,
+                style: const TextStyle(
+                  color: _white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
           ),
-          alignment: Alignment.center,
-          child: _icon(svg, 23),
         ),
-        const SizedBox(height: 6),
-        Text(label,
-          maxLines: 1,
-          style: const TextStyle(
-            color: _white, fontSize: 10,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

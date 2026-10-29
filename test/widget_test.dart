@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:binance/features/assets/presentation/select_currency_screen.dart';
 import 'package:binance/features/home/domain/home_balance.dart';
 import 'package:binance/core/utils/wallet_amount_formatter.dart';
 import 'package:binance/features/assets/domain/wallet_allocation.dart';
@@ -71,6 +73,27 @@ void main() {
     expect(zero.btcFraction, 0);
     expect(unknown.hasValuation, false);
     expect(unknown.usdtFraction, 0);
+  });
+
+
+  testWidgets('Add Funds currency list searches by ticker and name',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: SelectCurrencyScreen()),
+    );
+    expect(find.text('Select Currency'), findsOneWidget);
+    expect(find.text('Trending'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('currency-search')), 'Bitcoin',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('BTC'), findsOneWidget);
+    expect(find.text('USDT'), findsNothing);
+    await tester.enterText(
+      find.byKey(const Key('currency-search')), 'zzzznotfound',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('No matching currencies'), findsOneWidget);
   });
 
 
