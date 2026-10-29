@@ -163,7 +163,7 @@ const _networks = <_DepositNetwork>[
     code: 'APT', name: 'Aptos',
     minimum: '>0.00001', arrivalMinutes: 1,
     badgeColor: Color(0xFF000000),
-    badgeBorder: Color(0x334FFFFFF),
+    badgeBorder: Color(0x33FFFFFF),
   ),
   _DepositNetwork(
     code: 'ARBITRUM', name: 'Arbitrum One',
