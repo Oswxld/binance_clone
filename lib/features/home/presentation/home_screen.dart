@@ -194,7 +194,6 @@ class _TrendingSearchState extends State<_TrendingSearch> {
 
   final PageController _controller = PageController();
   Timer? _timer;
-  int _currentPage = 0;
 
   @override
   void initState() {
@@ -235,7 +234,6 @@ class _TrendingSearchState extends State<_TrendingSearch> {
                 controller: _controller,
                 scrollDirection: Axis.vertical,
                 physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) => _currentPage = index,
                 itemBuilder: (context, index) {
                   final headline = _headlines[index % _headlines.length];
                   return Align(
