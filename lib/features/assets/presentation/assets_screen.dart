@@ -193,13 +193,25 @@ class _PortfolioHeader extends StatelessWidget {
         const Row(
           children: [
             Text("Today's PNL", style: TextStyle(
-              fontSize: 10.5, color: _muted,
+              fontSize: 10.5,
+              color: _muted,
+              decoration: TextDecoration.underline,
+              decorationColor: _muted,
+              decorationStyle: TextDecorationStyle.dotted,
             )),
             SizedBox(width: 6),
-            Text('KSh0.00 (0.00%)', style: TextStyle(
-              fontSize: 10.5, color: _muted,
-              fontWeight: FontWeight.w400,
-            )),
+            // Screenshot-matching demo figure; not a calculated daily PNL.
+            Text(
+              '-KSh0.72631392 (-0.19%)',
+              key: Key('assets-today-pnl'),
+              style: TextStyle(
+                fontSize: 10.5,
+                color: BinancePalette.red,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(width: 2),
+            Icon(Icons.chevron_right, size: 14, color: _muted),
           ],
         ),
         if (current != null && !current.hasValuation) ...[

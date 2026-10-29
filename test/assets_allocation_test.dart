@@ -26,6 +26,13 @@ void main() {
       ),
     );
 
+    // Today's PNL is an intentionally fixed screenshot demo figure.
+    final pnl = tester.widget<Text>(
+      find.byKey(const Key('assets-today-pnl')),
+    );
+    expect(pnl.data, '-KSh0.72631392 (-0.19%)');
+    expect(pnl.style?.color, const Color(0xFFF6465D));
+
     updates.add(HomeBalance.valued(
       usdt: 2,
       btc: 12 / 10409400,
