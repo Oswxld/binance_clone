@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:binance/features/assets/presentation/select_currency_screen.dart';
+import 'package:binance/features/assets/presentation/select_method_screen.dart';
 import 'package:binance/features/home/domain/home_balance.dart';
 import 'package:binance/core/utils/wallet_amount_formatter.dart';
 import 'package:binance/features/assets/domain/wallet_allocation.dart';
@@ -94,6 +95,41 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('No matching currencies'), findsOneWidget);
+  });
+
+
+
+  testWidgets('USDT alone navigates to Select Method and starts the loader',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: SelectCurrencyScreen()),
+    );
+    expect(find.byKey(const Key('usdt-loading-toast')), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('currency-USDT')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(find.text('Select Method'), findsOneWidget);
+    expect(find.text('Deposit Asset'), findsOneWidget);
+    expect(find.text('Receive Via Binance Pay'), findsOneWidget);
+    expect(find.text('P2P Trading'), findsOneWidget);
+    expect(find.text('Buy with KES'), findsOneWidget);
+    expect(find.byKey(const Key('usdt-loading-toast')), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 3300));
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(find.byKey(const Key('usdt-loading-toast')), findsNothing);
+    expect(find.text('Select Method'), findsOneWidget);
+  });
+
+  testWidgets('Select Method does not animate when opened directly',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: SelectMethodScreen()),
+    );
+    expect(find.text('Select Method'), findsOneWidget);
+    expect(find.byKey(const Key('usdt-loading-toast')), findsNothing);
   });
 
 

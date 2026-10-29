@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/theme/binance_palette.dart';
+import 'select_method_screen.dart';
 
 /// Visual catalog from the supplied Select Currency mockup. This is the
 /// starting point of Add Funds, not a deposit-processing implementation.
@@ -59,8 +60,20 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen> {
 
   void _onCurrencySelected(_CurrencyOption currency) {
     FocusScope.of(context).unfocus();
-    // The supplied design stops at currency selection. Do not fake a deposit
-    // or modify the Supabase holdings without a real funding flow.
+    if (currency.symbol == 'USDT') {
+      // Only tapping USDT enters Select Method and starts the four-bar
+      // loading toast. Other coins retain their existing placeholder flow.
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const SelectMethodScreen(
+            showUsdtEntryAnimation: true,
+          ),
+        ),
+      );
+      return;
+    }
+    // Other currencies are not wired to funding yet. Never mutate holdings
+    // or pretend that a deposit succeeded.
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(
