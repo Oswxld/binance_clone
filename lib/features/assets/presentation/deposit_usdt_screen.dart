@@ -348,15 +348,36 @@ class _QrAddressCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Text(
-                      address == DepositUsdtScreen.previewTrc20Address
-                          ? 'TMZig2yuw3R3XEJN75nwHAh\n3CAWQsvHvbH'
-                          : address,
+                    Text.rich(
+                      TextSpan(
+                        children: address == DepositUsdtScreen.previewTrc20Address
+                            ? const [
+                                TextSpan(
+                                  text: 'TMZig2yuw3R3XEJN75nwHAh',
+                                  style: TextStyle(
+                                    color: BinancePalette.yellowPressed,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '\n3CAWQsvHvbH',
+                                  style: TextStyle(
+                                    color: BinancePalette.textPrimary,
+                                  ),
+                                ),
+                              ]
+                            : [
+                                TextSpan(
+                                  text: address,
+                                  style: const TextStyle(
+                                    color: BinancePalette.textPrimary,
+                                  ),
+                                ),
+                              ],
+                      ),
                       key: const Key('deposit-address-value'),
                       style: const TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: BinancePalette.textPrimary,
                       ),
                       softWrap: true,
                       overflow: TextOverflow.visible,
