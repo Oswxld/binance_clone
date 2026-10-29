@@ -78,11 +78,6 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            const Positioned(
-              right: 0,
-              bottom: 18,
-              child: _AssistantBubble(),
-            ),
         ],
       ),
     );
@@ -953,22 +948,3 @@ class _CommunityTabs extends StatelessWidget {
   }
 }
 
-class _AssistantBubble extends StatelessWidget {
-  const _AssistantBubble();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 29,
-      height: 29,
-      alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        color: _yellow,
-        borderRadius: BorderRadius.horizontal(
-          left: Radius.circular(20),
-        ),
-      ),
-      child: const Text('😊', style: TextStyle(fontSize: 12)),
-    );
-  }
-}
