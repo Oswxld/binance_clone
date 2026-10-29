@@ -99,37 +99,51 @@ void main() {
 
 
 
-  testWidgets('USDT alone navigates to Select Method and starts the loader',
+  testWidgets('USDT shows the equalizer on Select Currency before routing',
       (tester) async {
     await tester.pumpWidget(
       const MaterialApp(home: SelectCurrencyScreen()),
     );
     expect(find.byKey(const Key('usdt-loading-toast')), findsNothing);
+    expect(find.text('Select Method'), findsNothing);
 
     await tester.tap(find.byKey(const ValueKey('currency-USDT')));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 250));
+
+    // Currency list is still visible while the tile animates. The next
+    // screen must not be built before the under-one-second delay ends.
+    expect(find.text('Select Currency'), findsOneWidget);
+    expect(find.byKey(const Key('usdt-loading-toast')), findsOneWidget);
+    expect(find.text('Select Method'), findsNothing);
+
+    await tester.pump(const Duration(milliseconds: 450));
+    expect(find.byKey(const Key('usdt-loading-toast')), findsOneWidget);
+    expect(find.text('Select Method'), findsNothing);
+
+    await tester.pump(const Duration(milliseconds: 460));
+    await tester.pumpAndSettle();
 
     expect(find.text('Select Method'), findsOneWidget);
     expect(find.text('Deposit Asset'), findsOneWidget);
     expect(find.text('Receive Via Binance Pay'), findsOneWidget);
     expect(find.text('P2P Trading'), findsOneWidget);
     expect(find.text('Buy with KES'), findsOneWidget);
-    expect(find.byKey(const Key('usdt-loading-toast')), findsOneWidget);
-
-    await tester.pump(const Duration(milliseconds: 3300));
-    await tester.pump(const Duration(milliseconds: 250));
     expect(find.byKey(const Key('usdt-loading-toast')), findsNothing);
-    expect(find.text('Select Method'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Select Currency'), findsOneWidget);
+    expect(find.byKey(const Key('usdt-loading-toast')), findsNothing);
   });
 
-  testWidgets('Select Method does not animate when opened directly',
+  testWidgets('Select Method never contains the currency-screen loader',
       (tester) async {
     await tester.pumpWidget(
       const MaterialApp(home: SelectMethodScreen()),
     );
     expect(find.text('Select Method'), findsOneWidget);
     expect(find.byKey(const Key('usdt-loading-toast')), findsNothing);
+    expect(find.byKey(const Key('usdt-equalizer-tile')), findsNothing);
   });
 
 

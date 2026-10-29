@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -13,11 +16,15 @@ class SelectCurrencyScreen extends StatefulWidget {
   State<SelectCurrencyScreen> createState() => _SelectCurrencyScreenState();
 }
 
-class _SelectCurrencyScreenState extends State<SelectCurrencyScreen> {
+class _SelectCurrencyScreenState extends State<SelectCurrencyScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey _numericKey = GlobalKey();
   final GlobalKey _letterAKey = GlobalKey();
   String _search = '';
+  late final AnimationController _equalizerController;
+  Timer? _usdtNavigationTimer;
+  bool _isUsdtLoading = false;
 
   static const _indexLetters = <String>[
     '1', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
@@ -26,9 +33,43 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _equalizerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+  }
+
+  @override
   void dispose() {
+    _usdtNavigationTimer?.cancel();
+    _equalizerController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _openUsdtMethod() {
+    // Display the four-bar loading tile ON Select Currency first.
+    // Prevent repeated taps from starting overlapping route transitions.
+    if (_isUsdtLoading) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _isUsdtLoading = true);
+    _equalizerController.repeat();
+    _usdtNavigationTimer?.cancel();
+    _usdtNavigationTimer = Timer(
+      const Duration(milliseconds: 900),
+      () {
+        if (!mounted) return;
+        _equalizerController.stop();
+        setState(() => _isUsdtLoading = false);
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => const SelectMethodScreen(),
+          ),
+        );
+      },
+    );
   }
 
   List<_CurrencyOption> _matching(List<_CurrencyOption> group) {
@@ -61,17 +102,10 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen> {
   void _onCurrencySelected(_CurrencyOption currency) {
     FocusScope.of(context).unfocus();
     if (currency.symbol == 'USDT') {
-      // Only tapping USDT enters Select Method and starts the four-bar
-      // loading toast. Other coins retain their existing placeholder flow.
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => const SelectMethodScreen(
-            showUsdtEntryAnimation: true,
-          ),
-        ),
-      );
+      _openUsdtMethod();
       return;
     }
+    if (_isUsdtLoading) return;
     // Other currencies are not wired to funding yet. Never mutate holdings
     // or pretend that a deposit succeeded.
     ScaffoldMessenger.of(context)
@@ -150,10 +184,12 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen> {
       // protects the device's actual gesture/navigation region only.
       body: SafeArea(
         top: false,
-        child: Column(
+        child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
               child: Container(
                 height: 42,
                 decoration: BoxDecoration(
@@ -289,6 +325,31 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen> {
                 ],
               ),
             ),
+              ],
+            ),
+            if (_isUsdtLoading)
+              Positioned.fill(
+                child: Stack(
+                  children: [
+                    // Block other currency taps while the brief transition
+                    // plays, without painting a full-screen dark scrim.
+                    const ModalBarrier(
+                      dismissible: false,
+                      color: Colors.transparent,
+                    ),
+                    Center(
+                      child: Semantics(
+                        key: const Key('usdt-loading-toast'),
+                        label: 'Opening USDT deposit methods',
+                        liveRegion: true,
+                        child: _EqualizerToast(
+                          animation: _equalizerController,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -504,6 +565,72 @@ class _CurrencyRow extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Four staggered yellow bars from the supplied loading animation.
+///
+/// This tile exists ONLY on Select Currency while a USDT tap is transitioning
+/// to Select Method. No animation is rendered on the destination screen.
+class _EqualizerToast extends StatelessWidget {
+  const _EqualizerToast({required this.animation});
+
+  final Animation<double> animation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('usdt-equalizer-tile'),
+      height: 56,
+      width: 56,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: const Color(0xF22E3440),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0x1AFFFFFF)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x59000000),
+            blurRadius: 22,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, _) {
+          return SizedBox(
+            height: 20,
+            width: 24,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (var index = 0; index < 4; index++) ...[
+                  if (index > 0) const SizedBox(width: 3),
+                  _bar(index),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _bar(int index) {
+    final phase = (animation.value - index * 0.15) * 2 * math.pi;
+    final wave = (1 - math.cos(phase)) / 2;
+    return Container(
+      width: 3.5,
+      height: 6 + 12 * wave,
+      decoration: BoxDecoration(
+        color: BinancePalette.yellow.withValues(
+          alpha: 0.65 + 0.35 * wave,
+        ),
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }

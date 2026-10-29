@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/binance_palette.dart';
@@ -9,56 +6,8 @@ import '../../../core/theme/binance_palette.dart';
 ///
 /// This is a presentation step. Selecting a method does not initiate a
 /// transfer, payment, wallet address generation, or balance update.
-class SelectMethodScreen extends StatefulWidget {
-  const SelectMethodScreen({
-    super.key,
-    this.showUsdtEntryAnimation = false,
-  });
-
-  /// The entry animation is *only* requested by tapping USDT.
-  /// Opening this screen normally never creates a loading overlay.
-  final bool showUsdtEntryAnimation;
-
-  @override
-  State<SelectMethodScreen> createState() => _SelectMethodScreenState();
-}
-
-class _SelectMethodScreenState extends State<SelectMethodScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _equalizerController;
-  Timer? _loadingTimer;
-  late bool _showLoading;
-
-  @override
-  void initState() {
-    super.initState();
-    _showLoading = widget.showUsdtEntryAnimation;
-    _equalizerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
-    if (_showLoading) {
-      _equalizerController.repeat();
-      _loadingTimer = Timer(
-        const Duration(milliseconds: 3200),
-        _dismissLoading,
-      );
-    }
-  }
-
-  void _dismissLoading() {
-    if (!mounted || !_showLoading) return;
-    _loadingTimer?.cancel();
-    _equalizerController.stop();
-    setState(() => _showLoading = false);
-  }
-
-  @override
-  void dispose() {
-    _loadingTimer?.cancel();
-    _equalizerController.dispose();
-    super.dispose();
-  }
+class SelectMethodScreen extends StatelessWidget {
+  const SelectMethodScreen({super.key});
 
   void _unavailable(String title) {
     ScaffoldMessenger.of(context)
@@ -107,11 +56,9 @@ class _SelectMethodScreenState extends State<SelectMethodScreen>
       // Actual Android system bars are provided by the OS, not the HTML.
       body: SafeArea(
         top: false,
-        child: Stack(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 22),
           children: [
-            ListView(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 22),
-              children: [
                 const _MethodSectionHeading('Deposit from Wallet'),
                 const SizedBox(height: 11),
                 _MethodCard(
@@ -146,37 +93,6 @@ class _SelectMethodScreenState extends State<SelectMethodScreen>
                   icon: Icons.credit_card_outlined,
                   onTap: () => _unavailable('Buy with KES'),
                 ),
-              ],
-            ),
-
-            // The HTML equalizer is a centered floating tile, not a full-page
-            // loader. It is placed ON this route after USDT is tapped and fades
-            // away after 3.2 seconds (or immediately when the user dismisses).
-            // Only the little tile captures taps, not the entire screen.
-            if (widget.showUsdtEntryAnimation)
-              Positioned.fill(
-                child: IgnorePointer(
-                  ignoring: !_showLoading,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
-                    child: _showLoading
-                        ? Center(
-                            key: const Key('usdt-loading-toast'),
-                            child: GestureDetector(
-                              onTap: _dismissLoading,
-                              child: _EqualizerToast(
-                                animation: _equalizerController,
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink(
-                            key: Key('usdt-loading-dismissed'),
-                          ),
-                  ),
-                ),
-              ),
           ],
         ),
       ),
@@ -274,70 +190,6 @@ class _MethodCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Faithful native Flutter counterpart of four staggered yellow HTML bars.
-class _EqualizerToast extends StatelessWidget {
-  const _EqualizerToast({required this.animation});
-  final Animation<double> animation;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: const Key('usdt-equalizer-tile'),
-      width: 56,
-      height: 56,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: const Color(0xF22E3440),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0x1AFFFFFF)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x59000000),
-            blurRadius: 22,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, _) {
-          return SizedBox(
-            width: 24,
-            height: 20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                for (var index = 0; index < 4; index++) ...[
-                  if (index > 0) const SizedBox(width: 3),
-                  _animatedBar(index),
-                ],
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _animatedBar(int index) {
-    // Four 1-second cycles offset by 0/150/300/450 ms, just like the CSS
-    // animation-delay values. Each bar pulses between 6 and 18 pixels.
-    final phase = (animation.value - index * 0.15) * 2 * math.pi;
-    final wave = (1 - math.cos(phase)) / 2;
-    return Container(
-      width: 3.5,
-      height: 6 + 12 * wave,
-      decoration: BoxDecoration(
-        color: BinancePalette.yellow.withValues(
-          alpha: 0.65 + 0.35 * wave,
-        ),
-        borderRadius: BorderRadius.circular(4),
       ),
     );
   }
