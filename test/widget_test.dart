@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:binance/features/assets/presentation/select_currency_screen.dart';
 import 'package:binance/features/assets/presentation/select_method_screen.dart';
 import 'package:binance/features/assets/presentation/choose_network_screen.dart';
+import 'package:binance/features/assets/presentation/deposit_usdt_screen.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:binance/features/home/domain/home_balance.dart';
 import 'package:binance/core/utils/wallet_amount_formatter.dart';
 import 'package:binance/features/assets/domain/wallet_allocation.dart';
@@ -189,6 +191,56 @@ void main() {
       );
       expect(find.byKey(ValueKey('network-card-$code')), findsOneWidget);
     }
+  });
+
+
+
+  testWidgets('TRX network opens Deposit USDT with a real QR widget',
+      (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: ChooseNetworkScreen()));
+    await tester.tap(find.byKey(const ValueKey('network-card-TRX')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Deposit USDT'), findsOneWidget);
+    expect(find.text('Tron (TRC20)'), findsOneWidget);
+    expect(find.byType(QrImageView), findsOneWidget);
+    expect(
+      tester.widget<QrImageView>(find.byType(QrImageView)).data,
+      DepositUsdtScreen.demoQrPayload,
+    );
+    expect(find.byKey(const Key('deposit-demo-warning')), findsOneWidget);
+    expect(find.text('Not configured yet'), findsOneWidget);
+    expect(find.byKey(const Key('save-share-address')), findsOneWidget);
+  });
+
+  testWidgets('demo QR never offers a fabricated deposit address',
+      (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: DepositUsdtScreen()));
+
+    await tester.tap(find.byKey(const Key('copy-deposit-address')));
+    await tester.pump();
+
+    expect(
+      find.textContaining('No deposit address is configured'),
+      findsOneWidget,
+    );
+    expect(find.text('Not configured yet'), findsOneWidget);
+  });
+
+  testWidgets('backend-supplied TRC20 address feeds the QR exactly',
+      (tester) async {
+    const address = 'TMZig2yuw3R3XEJN75nwHAh3CAWQsvHvbH';
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: DepositUsdtScreen(trustedDepositAddress: address),
+      ),
+    );
+    expect(
+      tester.widget<QrImageView>(find.byType(QrImageView)).data,
+      address,
+    );
+    expect(find.byKey(const Key('deposit-demo-warning')), findsNothing);
+    expect(find.text(address), findsOneWidget);
   });
 
 

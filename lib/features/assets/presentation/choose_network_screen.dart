@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/theme/binance_palette.dart';
+import 'deposit_usdt_screen.dart';
 
 /// USDT network catalogue matching the supplied Choose Network layout.
 /// Names, minimums and arrival times are demo values from the mockup, NOT
@@ -15,6 +16,14 @@ class ChooseNetworkScreen extends StatelessWidget {
   final String assetSymbol;
 
   void _showUnavailable(BuildContext context, _DepositNetwork network) {
+    if (network.code == 'TRX' && assetSymbol == 'USDT') {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const DepositUsdtScreen(),
+        ),
+      );
+      return;
+    }
     // Never synthesize an address or imply a network deposit was initiated.
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
