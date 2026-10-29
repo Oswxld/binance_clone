@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -6,12 +7,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../domain/home_balance.dart';
 import '../domain/home_repository.dart';
 
-/// Supabase database quantities + public USDT/BTC prices in KES.
-/// The stream is shared between Home and Assets through Riverpod.
+/// Balances update instantly from the owner-scoped Supabase stream. KES
+/// quotes refresh separately, so an HTTP outage never freezes allocation.
 class HomeRepositoryImpl implements HomeRepository {
   const HomeRepositoryImpl(this._client);
 
   final SupabaseClient _client;
+
+  // Clearly labeled indicative DEMO rates used when no live quote is
+  // available yet. They never change the underlying Supabase holdings.
+  static const double _referenceUsdtKes = 130;
+  static const double _referenceBtcKes = 10409400;
 
   @override
   Stream<HomeBalance> watchBalance() {
@@ -21,52 +27,113 @@ class HomeRepositoryImpl implements HomeRepository {
         StateError('Sign in before watching a wallet balance.'),
       );
     }
-    return _client
-        .from('b_balances')
-        .stream(primaryKey: ['id'])
-        .eq('owner_id', ownerId)
-        .asyncMap((rows) async {
-      if (rows.isEmpty) return const HomeBalance.zero();
 
-      final row = rows.first;
-      final usdt = double.parse(row['usdt_balance'].toString());
-      final btc = double.parse(row['btc_balance'].toString());
+    late final StreamController<HomeBalance> controller;
+    StreamSubscription<List<Map<String, dynamic>>>? balanceSubscription;
+    Timer? priceRefreshTimer;
 
-      // Each authenticated account owns its own wallet. A zero balance
-      // doesn't need an external quote; never invent nonzero holdings.
-      if (usdt == 0 && btc == 0) return const HomeBalance.zero();
+    double usdt = 0;
+    double btc = 0;
+    double usdtKes = _referenceUsdtKes;
+    double btcKes = _referenceBtcKes;
+    DateTime? lastSuccessfulQuote;
+    bool hasSnapshot = false;
+    bool fetchingPrices = false;
 
+    void publish() {
+      if (controller.isClosed || !hasSnapshot) return;
+      if (usdt == 0 && btc == 0) {
+        controller.add(const HomeBalance.zero());
+        return;
+      }
+      final quoteIsOld = lastSuccessfulQuote == null ||
+          DateTime.now().difference(lastSuccessfulQuote!) >
+              const Duration(minutes: 5);
+      controller.add(HomeBalance.valued(
+        usdt: usdt,
+        btc: btc,
+        usdtKes: usdtKes,
+        btcKes: btcKes,
+        indicativeRates: quoteIsOld,
+      ));
+    }
+
+    Future<void> refreshPrices() async {
+      if (fetchingPrices || !hasSnapshot || controller.isClosed ||
+          (usdt == 0 && btc == 0)) {
+        return;
+      }
+      fetchingPrices = true;
       try {
         final uri = Uri.https(
           'api.coingecko.com',
           '/api/v3/simple/price',
           {'ids': 'bitcoin,tether', 'vs_currencies': 'kes'},
         );
-        final response = await http
-            .get(uri)
-            .timeout(const Duration(seconds: 15));
+        final response =
+            await http.get(uri).timeout(const Duration(seconds: 12));
         if (response.statusCode != 200) {
           throw StateError('Price API HTTP ${response.statusCode}');
         }
-
         final prices = jsonDecode(response.body) as Map<String, dynamic>;
-        final usdtKes = (prices['tether']?['kes'] as num?)?.toDouble();
-        final btcKes = (prices['bitcoin']?['kes'] as num?)?.toDouble();
-        if (usdtKes == null || btcKes == null ||
-            usdtKes <= 0 || btcKes <= 0) {
-          throw const FormatException('Missing positive KES rates.');
+        final nextUsdtKes = (prices['tether']?['kes'] as num?)?.toDouble();
+        final nextBtcKes = (prices['bitcoin']?['kes'] as num?)?.toDouble();
+        if (nextUsdtKes == null || nextBtcKes == null ||
+            !nextUsdtKes.isFinite || !nextBtcKes.isFinite ||
+            nextUsdtKes <= 0 || nextBtcKes <= 0) {
+          throw const FormatException('Invalid positive KES quotes');
         }
-        return HomeBalance.valued(
-          usdt: usdt,
-          btc: btc,
-          usdtKes: usdtKes,
-          btcKes: btcKes,
-        );
+        usdtKes = nextUsdtKes;
+        btcKes = nextBtcKes;
+        lastSuccessfulQuote = DateTime.now();
+        publish();
       } catch (_) {
-        // Network/rate-limit failure: keep the streamed holdings visible,
-        // but mark KES estimates unavailable instead of reporting fake KSh 0.
-        return HomeBalance.unpriced(usdt: usdt, btc: btc);
+        // Keep the last successful quote (or explicit indicative reference).
+        // No fake zero balances and no disappearing allocation bar.
+        publish();
+      } finally {
+        fetchingPrices = false;
       }
-    });
+    }
+
+    controller = StreamController<HomeBalance>(
+      onListen: () {
+        balanceSubscription = _client
+            .from('b_balances')
+            .stream(primaryKey: ['id'])
+            .eq('owner_id', ownerId)
+            .listen(
+          (rows) {
+            if (rows.isEmpty) {
+              usdt = 0;
+              btc = 0;
+            } else {
+              usdt = double.parse(rows.first['usdt_balance'].toString());
+              btc = double.parse(rows.first['btc_balance'].toString());
+            }
+            hasSnapshot = true;
+            // New holdings immediately recalculate the relative KES values.
+            publish();
+            // The rate request cannot block the Supabase subscription.
+            if (lastSuccessfulQuote == null) {
+              unawaited(refreshPrices());
+            }
+          },
+          onError: (Object error, StackTrace stack) {
+            if (!controller.isClosed) controller.addError(error, stack);
+          },
+        );
+        // Market moves change the split even if holdings stay the same.
+        priceRefreshTimer = Timer.periodic(
+          const Duration(seconds: 90),
+          (_) => unawaited(refreshPrices()),
+        );
+      },
+      onCancel: () async {
+        priceRefreshTimer?.cancel();
+        await balanceSubscription?.cancel();
+      },
+    );
+    return controller.stream;
   }
 }

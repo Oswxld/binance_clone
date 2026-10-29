@@ -346,8 +346,8 @@ class _AllocationCard extends StatelessWidget {
                     // never fake the mockup's 78/22 allocation.
                     return const ColoredBox(color: BinancePalette.raised);
                   }
-                  // Tween just the USDT portion. BTC occupies the remainder,
-                  // keeping both proportions accurate as Realtime updates arrive.
+                  // Animate changes in either wallet quantity or KES quotes.
+                  // BTC occupies the remainder of the bar.
                   return TweenAnimationBuilder<double>(
                     tween: Tween<double>(
                       begin: 0,
@@ -363,12 +363,17 @@ class _AllocationCard extends StatelessWidget {
                             SizedBox(
                               width: blueWidth,
                               child: const ColoredBox(
+                                key: Key('allocation-usdt-segment'),
                                 color: Color(0xFF1E75FF),
                               ),
                             ),
-                          const Expanded(
-                            child: ColoredBox(color: _yellow),
-                          ),
+                          if (usdtShare < 1)
+                            const Expanded(
+                              child: ColoredBox(
+                                key: Key('allocation-btc-segment'),
+                                color: _yellow,
+                              ),
+                            ),
                         ],
                       );
                     },
@@ -377,6 +382,37 @@ class _AllocationCard extends StatelessWidget {
               ),
             ),
           ),
+          if (allocation.hasValuation) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const CircleAvatar(
+                  radius: 3, backgroundColor: Color(0xFF1E75FF)),
+                const SizedBox(width: 5),
+                Text(
+                  'USDT ${(allocation.usdtFraction * 100).toStringAsFixed(1)}%',
+                  key: const Key('allocation-usdt-percentage'),
+                  style: const TextStyle(color: _muted, fontSize: 10),
+                ),
+                const SizedBox(width: 14),
+                const CircleAvatar(radius: 3, backgroundColor: _yellow),
+                const SizedBox(width: 5),
+                Text(
+                  'BTC ${(allocation.btcFraction * 100).toStringAsFixed(1)}%',
+                  key: const Key('allocation-btc-percentage'),
+                  style: const TextStyle(color: _muted, fontSize: 10),
+                ),
+              ],
+            ),
+            if (balance.indicativeRates) ...[
+              const SizedBox(height: 8),
+              const Text(
+                'Indicative KES split • live prices unavailable',
+                key: Key('allocation-indicative-price-label'),
+                style: TextStyle(color: _muted, fontSize: 10),
+              ),
+            ],
+          ],
         ],
       ),
     );
@@ -408,8 +444,6 @@ class _BalancesCard extends StatelessWidget {
           _AssetBalanceRow(
             ticker: 'USDT',
             subtitle: 'TetherUS',
-            svg: 'asset_usdt',
-            accent: const Color(0xFF009393),
             amount: balance.hasError ? '--'
                 : formatWalletQuantity(quantities.usdt),
             kes: _kesText(quantities.usdtValueKes),
@@ -420,8 +454,6 @@ class _BalancesCard extends StatelessWidget {
           _AssetBalanceRow(
             ticker: 'BTC',
             subtitle: 'Bitcoin',
-            svg: 'asset_btc',
-            accent: const Color(0xFFF7931A),
             amount: balance.hasError ? '--'
                 : formatWalletQuantity(quantities.btc),
             kes: _kesText(quantities.btcValueKes),
@@ -442,8 +474,6 @@ class _AssetBalanceRow extends StatelessWidget {
   const _AssetBalanceRow({
     required this.ticker,
     required this.subtitle,
-    required this.svg,
-    required this.accent,
     required this.amount,
     required this.kes,
     this.pnl = false,
@@ -451,8 +481,6 @@ class _AssetBalanceRow extends StatelessWidget {
 
   final String ticker;
   final String subtitle;
-  final String svg;
-  final Color accent;
   final String amount;
   final String kes;
   final bool pnl;
@@ -463,15 +491,14 @@ class _AssetBalanceRow extends StatelessWidget {
       children: [
         Row(
           children: [
-            Container(
-              height: 25,
-              width: 25,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: accent,
+            ClipOval(
+              child: Image.asset(
+                'assets/svgs/home_icons/$ticker.png',
+                key: ValueKey('assets-coin-icon-$ticker'),
+                width: 25,
+                height: 25,
+                fit: BoxFit.contain,
               ),
-              child: _icon(svg, 15),
             ),
             const SizedBox(width: 9),
             Expanded(

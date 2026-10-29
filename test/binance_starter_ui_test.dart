@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('center yellow Trade navigation circle is 62x62', (tester) async {
+  testWidgets('center yellow Trade navigation circle is 52x52', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -28,8 +28,12 @@ void main() {
 
     expect(
       tester.getSize(find.byKey(const Key('bottom-trade-circle'))),
-      const Size(62, 62),
+      const Size(52, 52),
     );
+    final shaped = tester.widget<CustomPaint>(
+      find.byKey(const Key('nav-shaped-background')),
+    );
+    expect(shaped.painter, isNotNull);
   });
 
   testWidgets('bank card grows taller and keeps both carousel actions',

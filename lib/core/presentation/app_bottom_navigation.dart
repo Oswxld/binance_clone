@@ -36,60 +36,84 @@ class AppBottomNavigation extends StatelessWidget {
     final investSelected = selected == AppTab.invest;
     final assetsSelected = selected == AppTab.assets;
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 9, 10, 8),
-      decoration: const BoxDecoration(
-        color: _background,
-        border: Border(top: BorderSide(color: BinancePalette.border)),
-      ),
-      child: Row(
-        children: [
-          _navigationItem(
-            name: 'Home',
-            icon: homeSelected ? 'home' : 'home_inactive',
-            active: homeSelected,
-            activeLabelColor: Colors.white,
-            onTap: () => onSelect(AppTab.home),
-          ),
-          _navigationItem(
-            name: 'Markets',
-            icon: marketsSelected ? 'markets_active' : 'markets_inactive',
-            active: marketsSelected,
-            // Per the Markets mockup, only the chart arrow glows yellow;
-            // the rest of the chart and active label stay white.
-            activeLabelColor: Colors.white,
-            onTap: () => onSelect(AppTab.markets),
-          ),
-          Expanded(
-            child: Center(
-              child: Container(
-                key: const Key('bottom-trade-circle'),
-                width: 62,
-                height: 62,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: _yellow,
-                  shape: BoxShape.circle,
+    // The navigation edge rises smoothly over the Trade circle and returns
+    // to the straight border. It is one painted path, never a line drawn
+    // behind the yellow circle.
+    return SizedBox(
+      height: 82,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final centerX = constraints.maxWidth / 2;
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  key: const Key('nav-shaped-background'),
+                  painter: const _NavigationContourPainter(),
                 ),
-                child: _icon('trade', 32),
               ),
-            ),
-          ),
-          _navigationItem(
-            name: 'Invest',
-            icon: investSelected ? 'invest_active' : 'invest_inactive',
-            active: investSelected,
-            activeLabelColor: Colors.white,
-            onTap: () => onSelect(AppTab.invest),
-          ),
-          _navigationItem(
-            name: 'Assets',
-            icon: assetsSelected ? 'assets_active' : 'assets_inactive',
-            active: assetsSelected,
-            activeLabelColor: Colors.white,
-            onTap: () => onSelect(AppTab.assets),
-          ),
-        ],
+              Positioned(
+                top: 25,
+                left: 10,
+                right: 10,
+                child: Row(
+                  children: [
+                    _navigationItem(
+                      name: 'Home',
+                      icon: homeSelected ? 'home' : 'home_inactive',
+                      active: homeSelected,
+                      activeLabelColor: Colors.white,
+                      onTap: () => onSelect(AppTab.home),
+                    ),
+                    _navigationItem(
+                      name: 'Markets',
+                      icon: marketsSelected
+                          ? 'markets_active' : 'markets_inactive',
+                      active: marketsSelected,
+                      activeLabelColor: Colors.white,
+                      onTap: () => onSelect(AppTab.markets),
+                    ),
+                    // Reserve the same width as the other four tabs so their
+                    // labels and touch targets remain exactly aligned.
+                    const Expanded(child: SizedBox.shrink()),
+                    _navigationItem(
+                      name: 'Invest',
+                      icon: investSelected
+                          ? 'invest_active' : 'invest_inactive',
+                      active: investSelected,
+                      activeLabelColor: Colors.white,
+                      onTap: () => onSelect(AppTab.invest),
+                    ),
+                    _navigationItem(
+                      name: 'Assets',
+                      icon: assetsSelected
+                          ? 'assets_active' : 'assets_inactive',
+                      active: assetsSelected,
+                      activeLabelColor: Colors.white,
+                      onTap: () => onSelect(AppTab.assets),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 7,
+                left: centerX - 26,
+                child: Container(
+                  key: const Key('bottom-trade-circle'),
+                  width: 52,
+                  height: 52,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: _yellow,
+                    shape: BoxShape.circle,
+                  ),
+                  child: _icon('trade', 27),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -132,4 +156,46 @@ class AppBottomNavigation extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A raised, smooth top outline that follows the Trade button without
+/// drawing a straight border through the middle.
+class _NavigationContourPainter extends CustomPainter {
+  const _NavigationContourPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const shoulderY = 24.0;
+    const crestY = 1.0;
+    final centerX = size.width / 2;
+
+    final contour = Path()
+      ..moveTo(0, shoulderY)
+      ..lineTo(centerX - 42, shoulderY)
+      ..cubicTo(centerX - 30, shoulderY,
+          centerX - 36, crestY, centerX, crestY)
+      ..cubicTo(centerX + 36, crestY,
+          centerX + 30, shoulderY, centerX + 42, shoulderY)
+      ..lineTo(size.width, shoulderY);
+
+    final filled = Path.from(contour)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(
+      filled,
+      Paint()..color = BinancePalette.canvas,
+    );
+    canvas.drawPath(
+      contour,
+      Paint()
+        ..color = BinancePalette.border
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _NavigationContourPainter oldDelegate) => false;
 }

@@ -47,6 +47,21 @@ void main() {
   test('KES formatting matches across Home and Assets', () {
     expect(formatWalletMoney(10497860.1), '10,497,860.10');
   });
+  test('indicative rates keep allocation visible when live prices fail', () {
+    final estimate = HomeBalance.valued(
+      usdt: 2,
+      btc: 12 / 10409400,
+      usdtKes: 130,
+      btcKes: 10409400,
+      indicativeRates: true,
+    );
+    final allocation = WalletAllocation.fromBalance(estimate);
+    expect(estimate.indicativeRates, isTrue);
+    expect(allocation.hasValuation, isTrue);
+    expect(allocation.usdtFraction, closeTo(260 / 272, 0.000001));
+    expect(allocation.btcFraction, closeTo(12 / 272, 0.000001));
+  });
+
   test('allocation updates with USDT/BTC KES values', () {
     final first = WalletAllocation.fromBalance(HomeBalance.valued(
       usdt: 3,

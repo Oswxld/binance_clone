@@ -8,6 +8,7 @@ class HomeBalance {
     this.usdtValueKes = 0,
     this.btcValueKes = 0,
     this.hasValuation = true,
+    this.indicativeRates = false,
   });
 
   const HomeBalance.zero()
@@ -16,7 +17,8 @@ class HomeBalance {
         totalKes = 0,
         usdtValueKes = 0,
         btcValueKes = 0,
-        hasValuation = true;
+        hasValuation = true,
+        indicativeRates = false;
 
   /// Retains the real holdings even if the price service is unavailable.
   const HomeBalance.unpriced({
@@ -25,7 +27,8 @@ class HomeBalance {
   })  : totalKes = 0,
         usdtValueKes = 0,
         btcValueKes = 0,
-        hasValuation = false;
+        hasValuation = false,
+        indicativeRates = false;
 
   final double usdt;
   final double btc;
@@ -34,11 +37,15 @@ class HomeBalance {
   final double btcValueKes;
   final bool hasValuation;
 
+  /// True when reference/stale KES exchange rates, not fresh quotes, are used.
+  final bool indicativeRates;
+
   factory HomeBalance.valued({
     required double usdt,
     required double btc,
     required double usdtKes,
     required double btcKes,
+    bool indicativeRates = false,
   }) {
     final tetherKes = usdt * usdtKes;
     final bitcoinKes = btc * btcKes;
@@ -48,6 +55,7 @@ class HomeBalance {
       usdtValueKes: tetherKes,
       btcValueKes: bitcoinKes,
       totalKes: tetherKes + bitcoinKes,
+      indicativeRates: indicativeRates,
     );
   }
 }
