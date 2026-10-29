@@ -7,6 +7,8 @@ import 'select_currency_screen.dart';
 import 'portfolio_sparkline.dart';
 
 import '../../home/domain/home_balance.dart';
+import '../../home/domain/wallet_display_currency.dart';
+import '../../home/presentation/display_currency_picker.dart';
 import '../../home/presentation/home_provider.dart';
 import '../../../core/utils/wallet_amount_formatter.dart';
 import '../../../core/theme/binance_palette.dart';
@@ -101,18 +103,22 @@ class _AssetsCategoryTabs extends StatelessWidget {
   }
 }
 
-class _PortfolioHeader extends StatelessWidget {
+class _PortfolioHeader extends ConsumerWidget {
   const _PortfolioHeader({required this.balance});
   final AsyncValue<HomeBalance> balance;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currency = ref.watch(displayCurrencyProvider);
     final current = balance.asData?.value;
     final totalText = balance.hasError
-        ? 'KSh--'
-        : (current != null && !current.hasValuation)
-            ? 'KSh--'
-            : 'KSh' + formatWalletMoney(current?.totalKes ?? 0);
+        ? formatWalletDisplayValue(null, currency)
+        : formatWalletDisplayValue(
+            current == null
+                ? 0
+                : current.valueIn(current.totalKes, currency),
+            currency,
+          );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,33 +142,36 @@ class _PortfolioHeader extends StatelessWidget {
             // They shrink together on narrow phones without pushing the
             // currency label against the graph on the opposite side.
             Expanded(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        totalText,
-                        maxLines: 1,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 28,
-                          letterSpacing: -0.45,
+              child: DisplayCurrencyPicker(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          totalText,
+                          key: const Key('assets-converted-total'),
+                          maxLines: 1,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 28,
+                            letterSpacing: -0.45,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 5),
-                  const Text('KES', style: TextStyle(
-                    fontSize: 11, color: _white,
-                    fontWeight: FontWeight.w500,
-                  )),
-                  const SizedBox(width: 2),
-                  _icon('asset_currency_chevron', 11),
-                ],
+                    const SizedBox(width: 5),
+                    Text(currency.code, style: const TextStyle(
+                      fontSize: 11, color: _white,
+                      fontWeight: FontWeight.w500,
+                    )),
+                    const SizedBox(width: 2),
+                    _icon('asset_currency_chevron', 11),
+                  ],
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -196,7 +205,7 @@ class _PortfolioHeader extends StatelessWidget {
         ),
         if (current != null && !current.hasValuation) ...[
           const SizedBox(height: 9),
-          const Text('KES prices unavailable; holdings are up to date.',
+          const Text('Market quotes unavailable; holdings are up to date.',
             style: TextStyle(color: Color(0xFFF6465D), fontSize: 11)),
         ],
         if (balance.hasError) ...[
@@ -386,14 +395,15 @@ class _AllocationCard extends StatelessWidget {
   }
 }
 
-class _BalancesCard extends StatelessWidget {
+class _BalancesCard extends ConsumerWidget {
   const _BalancesCard({required this.balance, required this.quantities});
 
   final AsyncValue<HomeBalance> balance;
   final HomeBalance quantities;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currency = ref.watch(displayCurrencyProvider);
     return _AssetCard(
       key: const Key('assets-balance-card'),
       child: Column(
@@ -414,7 +424,7 @@ class _BalancesCard extends StatelessWidget {
             subtitle: 'TetherUS',
             amount: balance.hasError ? '--'
                 : formatWalletQuantity(quantities.usdt),
-            kes: _kesText(quantities.usdtValueKes),
+            kes: _convertedValue(quantities.usdtValueKes, currency),
           ),
           const SizedBox(height: 7),
           const Divider(color: _border, height: 1),
@@ -424,17 +434,20 @@ class _BalancesCard extends StatelessWidget {
             subtitle: 'Bitcoin',
             amount: balance.hasError ? '--'
                 : formatWalletQuantity(quantities.btc),
-            kes: _kesText(quantities.btcValueKes),
+            kes: _convertedValue(quantities.btcValueKes, currency),
             pnl: true,
+            pnlCurrency: currency.code,
           ),
         ],
       ),
     );
   }
 
-  String _kesText(double value) {
-    if (balance.hasError || !quantities.hasValuation) return 'KSh--';
-    return 'KSh' + formatWalletMoney(value);
+  String _convertedValue(double value, WalletDisplayCurrency currency) {
+    if (balance.hasError || !quantities.hasValuation) {
+      return formatWalletAssetValue(null, currency);
+    }
+    return formatWalletAssetValue(quantities.valueIn(value, currency), currency);
   }
 }
 
@@ -445,6 +458,7 @@ class _AssetBalanceRow extends StatelessWidget {
     required this.amount,
     required this.kes,
     this.pnl = false,
+    this.pnlCurrency = 'KES',
   });
 
   final String ticker;
@@ -452,6 +466,7 @@ class _AssetBalanceRow extends StatelessWidget {
   final String amount;
   final String kes;
   final bool pnl;
+  final String pnlCurrency;
 
   @override
   Widget build(BuildContext context) {
@@ -506,17 +521,21 @@ class _AssetBalanceRow extends StatelessWidget {
         ),
         if (pnl) ...[
           const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.only(left: 34),
+          Padding(
+            padding: const EdgeInsets.only(left: 34),
             child: Row(
               children: [
-                Text(
+                const Text(
                   'Unrealized PNL',
                   style: TextStyle(color: _muted, fontSize: 10.5),
                 ),
-                Spacer(),
-                Text('KSh0.00 (0.00%)',
-                  style: TextStyle(color: _muted, fontSize: 10.5)),
+                const Spacer(),
+                Text(
+                  pnlCurrency == 'KES'
+                      ? 'KSh0.00 (0.00%)'
+                      : '0.00 $pnlCurrency (0.00%)',
+                  style: const TextStyle(color: _muted, fontSize: 10.5),
+                ),
               ],
             ),
           ),
