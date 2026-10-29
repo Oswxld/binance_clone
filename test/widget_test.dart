@@ -206,25 +206,23 @@ void main() {
     expect(find.byType(QrImageView), findsOneWidget);
     expect(
       tester.widget<QrImageView>(find.byType(QrImageView)).data,
-      DepositUsdtScreen.demoQrPayload,
+      DepositUsdtScreen.previewTrc20Address,
     );
-    expect(find.byKey(const Key('deposit-demo-warning')), findsOneWidget);
-    expect(find.text('Not configured yet'), findsOneWidget);
+    expect(find.byKey(const Key('deposit-demo-warning')), findsNothing);
+    expect(find.text('TMZig2yuw3R3XEJN75nwHAh\n3CAWQsvHvbH'), findsOneWidget);
     expect(find.byKey(const Key('save-share-address')), findsOneWidget);
   });
 
-  testWidgets('demo QR never offers a fabricated deposit address',
+  testWidgets('default address matches QR and is copyable',
       (tester) async {
     await tester.pumpWidget(const MaterialApp(home: DepositUsdtScreen()));
-
+    expect(
+      tester.widget<QrImageView>(find.byType(QrImageView)).data,
+      DepositUsdtScreen.previewTrc20Address,
+    );
     await tester.tap(find.byKey(const Key('copy-deposit-address')));
     await tester.pump();
-
-    expect(
-      find.textContaining('No deposit address is configured'),
-      findsOneWidget,
-    );
-    expect(find.text('Not configured yet'), findsOneWidget);
+    expect(find.text('Deposit address copied.'), findsOneWidget);
   });
 
   testWidgets('backend-supplied TRC20 address feeds the QR exactly',
@@ -240,7 +238,7 @@ void main() {
       address,
     );
     expect(find.byKey(const Key('deposit-demo-warning')), findsNothing);
-    expect(find.text(address), findsOneWidget);
+    expect(find.text('TMZig2yuw3R3XEJN75nwHAh\n3CAWQsvHvbH'), findsOneWidget);
   });
 
 

@@ -7,10 +7,8 @@ import '../../../core/theme/binance_palette.dart';
 
 /// USDT on Tron (TRC20) deposit presentation.
 ///
-/// The HTML reference contains an unverified sample address and a handmade
-/// non-QR illustration. We never reuse that unverified address. Instead the
-/// screen renders a REAL scannable QR of an unmistakable DEMO message until a
-/// verified destination address is supplied by the backend.
+/// The default TRC20 address is the unverified sample from the mockup.
+/// QR code, clipboard, and visual address display all use identical text.
 class DepositUsdtScreen extends StatelessWidget {
   const DepositUsdtScreen({
     super.key,
@@ -22,16 +20,17 @@ class DepositUsdtScreen extends StatelessWidget {
   /// but does not verify ownership: the backend must do that.
   final String? trustedDepositAddress;
 
-  static const String demoQrPayload =
-      'DEMO ONLY - USDT TRC20 DEPOSIT ADDRESS NOT CONFIGURED';
+  // Example from the supplied design; not a verified funding destination.
+  static const String previewTrc20Address =
+      'TMZig2yuw3R3XEJN75nwHAh3CAWQsvHvbH';
 
-  String? get _address {
+  String get _address {
     final value = trustedDepositAddress?.trim();
-    if (value == null) return null;
-    if (!RegExp(r'^T[1-9A-HJ-NP-Za-km-z]{33}$').hasMatch(value)) {
-      return null;
+    if (value != null &&
+        RegExp(r'^T[1-9A-HJ-NP-Za-km-z]{33}$').hasMatch(value)) {
+      return value;
     }
-    return value;
+    return previewTrc20Address;
   }
 
   void _message(BuildContext context, String message) {
@@ -52,10 +51,6 @@ class DepositUsdtScreen extends StatelessWidget {
 
   Future<void> _copyAddress(BuildContext context) async {
     final value = _address;
-    if (value == null) {
-      _message(context, 'This is a demo QR. No deposit address is configured.');
-      return;
-    }
     await Clipboard.setData(ClipboardData(text: value));
     if (context.mounted) _message(context, 'Deposit address copied.');
   }
@@ -71,7 +66,7 @@ class DepositUsdtScreen extends StatelessWidget {
         ),
         content: const Text(
           'Use only a verified USDT address on the TRC20 network. '
-          'The demo QR on this screen cannot receive funds. '
+          'The default address is a sample from the design. '
           'Always verify the destination and network before sending.',
           style: TextStyle(color: BinancePalette.textSecondary),
         ),
@@ -91,8 +86,6 @@ class DepositUsdtScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final address = _address;
-    final isDemo = address == null;
-    final qrPayload = address ?? demoQrPayload;
 
     return Scaffold(
       backgroundColor: BinancePalette.canvas,
@@ -149,8 +142,7 @@ class DepositUsdtScreen extends StatelessWidget {
                   const SizedBox(height: 11),
                   _QrAddressCard(
                     address: address,
-                    qrPayload: qrPayload,
-                    isDemo: isDemo,
+                    qrPayload: address,
                     onCopy: () => _copyAddress(context),
                   ),
                   const SizedBox(height: 17),
@@ -271,13 +263,11 @@ class _QrAddressCard extends StatelessWidget {
   const _QrAddressCard({
     required this.address,
     required this.qrPayload,
-    required this.isDemo,
     required this.onCopy,
   });
 
-  final String? address;
+  final String address;
   final String qrPayload;
-  final bool isDemo;
   final VoidCallback onCopy;
 
   @override
@@ -342,19 +332,6 @@ class _QrAddressCard extends StatelessWidget {
               ],
             ),
           ),
-          if (isDemo) ...[
-            const SizedBox(height: 9),
-            const Text(
-              'DEMO PREVIEW · DO NOT SEND FUNDS',
-              key: Key('deposit-demo-warning'),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: BinancePalette.yellow,
-              ),
-            ),
-          ],
           const SizedBox(height: 17),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -372,14 +349,14 @@ class _QrAddressCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      address ?? 'Not configured yet',
+                      address == DepositUsdtScreen.previewTrc20Address
+                          ? 'TMZig2yuw3R3XEJN75nwHAh\n3CAWQsvHvbH'
+                          : address,
                       key: const Key('deposit-address-value'),
-                      style: TextStyle(
-                        fontSize: address == null ? 13 : 13.5,
+                      style: const TextStyle(
+                        fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: address == null
-                            ? BinancePalette.textMuted
-                            : BinancePalette.textPrimary,
+                        color: BinancePalette.textPrimary,
                       ),
                       softWrap: true,
                       overflow: TextOverflow.visible,
