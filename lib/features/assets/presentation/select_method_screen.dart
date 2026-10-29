@@ -144,7 +144,7 @@ class _MethodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF242932),
+      color: BinancePalette.surface,
       borderRadius: BorderRadius.circular(15),
       child: InkWell(
         onTap: onTap,

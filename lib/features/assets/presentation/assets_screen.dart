@@ -50,12 +50,12 @@ class AssetsScreen extends ConsumerWidget {
               },
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(14, 7, 14, 16),
+                padding: const EdgeInsets.fromLTRB(16, 13, 16, 16),
                 children: [
                   _PortfolioHeader(balance: balance),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 17),
                   const _AssetActions(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 18),
                   _AllocationCard(balance: quantities),
                   const SizedBox(height: 12),
                   _BalancesCard(balance: balance, quantities: quantities),
@@ -77,41 +77,21 @@ class _AssetsCategoryTabs extends StatelessWidget {
     const tabs = ['Overview', 'Futures', 'Earn', 'Spot', 'Funding'];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(14, 6, 14, 4),
+      padding: const EdgeInsets.fromLTRB(16, 9, 16, 4),
       child: Row(
         children: [
           for (var i = 0; i < tabs.length; i++) ...[
             if (i != 0) const SizedBox(width: 16),
             SizedBox(
               height: 29,
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  Text(
-                    tabs[i],
-                    style: TextStyle(
-                      fontSize: i == 0 ? 14 : 13,
-                      fontWeight: i == 0
-                          ? FontWeight.w600 : FontWeight.w400,
-                      color: i == 0 ? Colors.white : _muted,
-                    ),
-                  ),
-                  if (i == 0)
-                    const Positioned(
-                      bottom: 0,
-                      child: SizedBox(
-                        width: 14,
-                        height: 2.5,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: _yellow,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(2)),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
+              child: Text(
+                tabs[i],
+                style: TextStyle(
+                  fontSize: i == 0 ? 14 : 13,
+                  fontWeight: i == 0
+                      ? FontWeight.w600 : FontWeight.w400,
+                  color: i == 0 ? _white : _muted,
+                ),
               ),
             ),
           ],
@@ -140,7 +120,7 @@ class _PortfolioHeader extends StatelessWidget {
         Row(
           children: [
             const Text('Est. Total Value', style: TextStyle(
-              color: _muted, fontSize: 11.5,
+              color: _white, fontSize: 12.5,
             )),
             const SizedBox(width: 5),
             _icon('asset_eye', 14),
@@ -148,7 +128,7 @@ class _PortfolioHeader extends StatelessWidget {
             _icon('asset_history', 18),
           ],
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -168,8 +148,8 @@ class _PortfolioHeader extends StatelessWidget {
                         maxLines: 1,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 28,
                           letterSpacing: -0.45,
                         ),
                       ),
@@ -177,7 +157,7 @@ class _PortfolioHeader extends StatelessWidget {
                   ),
                   const SizedBox(width: 5),
                   const Text('KES', style: TextStyle(
-                    fontSize: 10, color: _muted,
+                    fontSize: 11, color: _white,
                     fontWeight: FontWeight.w500,
                   )),
                   const SizedBox(width: 2),
@@ -189,14 +169,14 @@ class _PortfolioHeader extends StatelessWidget {
             const PortfolioSparkline(),
           ],
         ),
-        const SizedBox(height: 3),
+        const SizedBox(height: 8),
         const Row(
           children: [
             Text("Today's PNL", style: TextStyle(
-              fontSize: 10.5,
-              color: _muted,
+              fontSize: 12,
+              color: _white,
               decoration: TextDecoration.underline,
-              decorationColor: _muted,
+              decorationColor: _white,
               decorationStyle: TextDecorationStyle.dotted,
             )),
             SizedBox(width: 6),
@@ -205,7 +185,7 @@ class _PortfolioHeader extends StatelessWidget {
               '-KSh0.72631392 (-0.19%)',
               key: Key('assets-today-pnl'),
               style: TextStyle(
-                fontSize: 10.5,
+                fontSize: 11.5,
                 color: BinancePalette.red,
                 fontWeight: FontWeight.w500,
               ),
@@ -224,7 +204,7 @@ class _PortfolioHeader extends StatelessWidget {
           const Text('Could not connect to balances. Pull down to retry.',
             style: TextStyle(color: Color(0xFFF6465D), fontSize: 11)),
         ],
-        const SizedBox(height: 5),
+        const SizedBox(height: 10),
         Center(child: _icon('asset_down_chevron', 12)),
       ],
     );
@@ -304,7 +284,7 @@ class _ActionButton extends StatelessWidget {
 }
 
 class _AssetCard extends StatelessWidget {
-  const _AssetCard({required this.child});
+  const _AssetCard({super.key, required this.child});
   final Widget child;
 
   @override
@@ -315,7 +295,7 @@ class _AssetCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: _surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _border),
+        border: Border.all(color: BinancePalette.divider, width: 0.6),
       ),
       child: child,
     );
@@ -331,12 +311,13 @@ class _AllocationCard extends StatelessWidget {
     final allocation = WalletAllocation.fromBalance(balance);
 
     return _AssetCard(
+      key: const Key('assets-allocation-card'),
       child: Column(
         children: [
           Row(
             children: [
               const Text('Allocation', style: TextStyle(
-                color: _white,
+                color: BinancePalette.textSecondary,
                 fontSize: 12.5,
                 fontWeight: FontWeight.w500,
               )),
@@ -397,37 +378,8 @@ class _AllocationCard extends StatelessWidget {
               ),
             ),
           ),
-          if (allocation.hasValuation) ...[
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const CircleAvatar(
-                  radius: 3, backgroundColor: Color(0xFF1E75FF)),
-                const SizedBox(width: 5),
-                Text(
-                  'USDT ${(allocation.usdtFraction * 100).toStringAsFixed(1)}%',
-                  key: const Key('allocation-usdt-percentage'),
-                  style: const TextStyle(color: _muted, fontSize: 10),
-                ),
-                const SizedBox(width: 14),
-                const CircleAvatar(radius: 3, backgroundColor: _yellow),
-                const SizedBox(width: 5),
-                Text(
-                  'BTC ${(allocation.btcFraction * 100).toStringAsFixed(1)}%',
-                  key: const Key('allocation-btc-percentage'),
-                  style: const TextStyle(color: _muted, fontSize: 10),
-                ),
-              ],
-            ),
-            if (balance.indicativeRates) ...[
-              const SizedBox(height: 8),
-              const Text(
-                'Indicative KES split • live prices unavailable',
-                key: Key('allocation-indicative-price-label'),
-                style: TextStyle(color: _muted, fontSize: 10),
-              ),
-            ],
-          ],
+          // Keep the animated USDT/BTC bar but hide the percentage legend.
+          const SizedBox(height: 5),
         ],
       ),
     );
@@ -443,19 +395,20 @@ class _BalancesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _AssetCard(
+      key: const Key('assets-balance-card'),
       child: Column(
         children: [
           Row(
             children: [
               const Text('Balance', style: TextStyle(
-                color: _white, fontSize: 12.5,
+                color: BinancePalette.textSecondary, fontSize: 12.5,
                 fontWeight: FontWeight.w500,
               )),
               const Spacer(),
               _icon('asset_balance_filter', 14),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 23),
           _AssetBalanceRow(
             ticker: 'USDT',
             subtitle: 'TetherUS',
@@ -463,9 +416,9 @@ class _BalancesCard extends StatelessWidget {
                 : formatWalletQuantity(quantities.usdt),
             kes: _kesText(quantities.usdtValueKes),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 7),
           const Divider(color: _border, height: 1),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           _AssetBalanceRow(
             ticker: 'BTC',
             subtitle: 'Bitcoin',
@@ -553,17 +506,20 @@ class _AssetBalanceRow extends StatelessWidget {
         ),
         if (pnl) ...[
           const SizedBox(height: 10),
-          const Row(
-            children: [
-              Text('Unrealized PNL',
+          const Padding(
+            padding: EdgeInsets.only(left: 34),
+            child: Row(
+              children: [
+                Text('Unrealized PNL',
                 style: TextStyle(color: _muted, fontSize: 10.5)),
               Spacer(),
-              Text('KSh0.00 (0.00%)',
-                style: TextStyle(color: _muted, fontSize: 10.5)),
-            ],
+                Text('KSh0.00 (0.00%)',
+                  style: TextStyle(color: _muted, fontSize: 10.5)),
+              ],
+            ),
           ),
         ],
-        const SizedBox(height: 9),
+        const SizedBox(height: 6),
         const Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -589,7 +545,7 @@ class _ActionChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       padding: const EdgeInsets.symmetric(
-        horizontal: 14, vertical: 6,
+        horizontal: 14, vertical: 4,
       ),
       child: Text(text, style: const TextStyle(
         color: Colors.white,

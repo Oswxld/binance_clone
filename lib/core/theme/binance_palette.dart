@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Shared Binance Classic-inspired dark palette.
-///
-/// Main canvas is charcoal grey rather than pure black. Raised surfaces
-/// provide readable contrast without making each tab feel like a different
-/// theme. Icon artwork and coin-specific brand colors live outside this file.
+/// Shared blue-charcoal theme sampled from the provided reference screenshot.
+/// Canvas, surfaces, controls and dividers are shared across every tab.
 abstract final class BinancePalette {
-  static const Color canvas = Color(0xFF181A20);
-  static const Color surface = Color(0xFF1E2329);
-  static const Color raised = Color(0xFF2B3139);
-  static const Color divider = Color(0xFF252A32);
-  static const Color border = Color(0xFF2B3139);
+  static const Color canvas = Color(0xFF1F2630);
+  static const Color surface = Color(0xFF272F3A);
+  static const Color raised = Color(0xFF333B48);
+  static const Color divider = Color(0xFF303847);
+  static const Color border = Color(0xFF303847);
 
   static const Color textPrimary = Color(0xFFEAECEF);
   static const Color textSecondary = Color(0xFFB7BDC6);
