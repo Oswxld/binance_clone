@@ -199,37 +199,42 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen> {
             Expanded(
               child: Stack(
                 children: [
-                  ListView(
+                  // Only 17 demo entries: build section anchors eagerly so
+                  // alphabet shortcuts can reliably reach even offscreen rows.
+                  SingleChildScrollView(
                     padding: EdgeInsets.fromLTRB(
                       16, 0, searching ? 16 : 34, 24,
                     ),
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
-                    children: [
-                      if (!empty) ...[
-                        ..._section('Trending', trending),
-                        ..._section(
-                          '1', numbers,
-                          titleKey: searching ? null : _numericKey,
-                        ),
-                        ..._section(
-                          'A', letters,
-                          titleKey: searching ? null : _letterAKey,
-                        ),
-                      ] else
-                        const Padding(
-                          padding: EdgeInsets.only(top: 65),
-                          child: Center(
-                            child: Text(
-                              'No matching currencies',
-                              style: TextStyle(
-                                color: BinancePalette.textMuted,
-                                fontSize: 13,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!empty) ...[
+                          ..._section('Trending', trending),
+                          ..._section(
+                            '1', numbers,
+                            titleKey: searching ? null : _numericKey,
+                          ),
+                          ..._section(
+                            'A', letters,
+                            titleKey: searching ? null : _letterAKey,
+                          ),
+                        ] else
+                          const Padding(
+                            padding: EdgeInsets.only(top: 65),
+                            child: Center(
+                              child: Text(
+                                'No matching currencies',
+                                style: TextStyle(
+                                  color: BinancePalette.textMuted,
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                   if (!searching)
                     Positioned(
@@ -421,7 +426,7 @@ class _CurrencyRow extends StatelessWidget {
                       width: 18, height: 18,
                     )
                   : Text(
-                      currency.glyph ?? currency.symbol.characters.first,
+                      currency.glyph ?? currency.symbol.substring(0, 1),
                       maxLines: 1,
                       style: TextStyle(
                         color: currency.glyphColor,
