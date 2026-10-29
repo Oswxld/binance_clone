@@ -358,6 +358,9 @@ class _AllocationCard extends StatelessWidget {
                     builder: (context, usdtShare, _) {
                       final blueWidth = constraints.maxWidth * usdtShare;
                       return Row(
+                        // Without stretch, a childless ColoredBox can shrink to
+                        // zero height inside the horizontal allocation Row.
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           if (blueWidth > 0)
                             SizedBox(
