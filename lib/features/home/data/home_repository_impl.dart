@@ -36,6 +36,8 @@ class HomeRepositoryImpl implements HomeRepository {
     double btc = 0;
     double usdtKes = _referenceUsdtKes;
     double btcKes = _referenceBtcKes;
+    double ethKes = 0;
+    double bnbKes = 0;
     DateTime? lastSuccessfulQuote;
     bool hasSnapshot = false;
     bool fetchingPrices = false;
@@ -54,6 +56,8 @@ class HomeRepositoryImpl implements HomeRepository {
         btc: btc,
         usdtKes: usdtKes,
         btcKes: btcKes,
+        ethKes: ethKes,
+        bnbKes: bnbKes,
         indicativeRates: quoteIsOld,
       ));
     }
@@ -68,7 +72,8 @@ class HomeRepositoryImpl implements HomeRepository {
         final uri = Uri.https(
           'api.coingecko.com',
           '/api/v3/simple/price',
-          {'ids': 'bitcoin,tether', 'vs_currencies': 'kes'},
+          {'ids': 'bitcoin,tether,ethereum,binancecoin',
+            'vs_currencies': 'kes'},
         );
         final response =
             await http.get(uri).timeout(const Duration(seconds: 12));
@@ -85,6 +90,14 @@ class HomeRepositoryImpl implements HomeRepository {
         }
         usdtKes = nextUsdtKes;
         btcKes = nextBtcKes;
+        // ETH/BNB are denomination quotes, not additional wallet holdings.
+        // Never invent rates if CoinGecko omits these two fields.
+        final nextEthKes = (prices['ethereum']?['kes'] as num?)?.toDouble();
+        final nextBnbKes = (prices['binancecoin']?['kes'] as num?)?.toDouble();
+        ethKes = nextEthKes != null && nextEthKes.isFinite && nextEthKes > 0
+            ? nextEthKes : 0;
+        bnbKes = nextBnbKes != null && nextBnbKes.isFinite && nextBnbKes > 0
+            ? nextBnbKes : 0;
         lastSuccessfulQuote = DateTime.now();
         publish();
       } catch (_) {
