@@ -7,6 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/utils/wallet_amount_formatter.dart';
 import '../../../core/theme/binance_palette.dart';
 import '../domain/home_balance.dart';
+import '../domain/wallet_display_currency.dart';
+import 'display_currency_picker.dart';
 import 'home_provider.dart';
 
 // One shared Binance Classic-inspired palette across all tabs.
@@ -290,32 +292,35 @@ class _TrendingSearchState extends State<_TrendingSearch> {
   }
 }
 
-class _BalanceSection extends StatelessWidget {
+class _BalanceSection extends ConsumerWidget {
   const _BalanceSection({required this.balance, required this.retry});
 
   final AsyncValue<HomeBalance> balance;
   final VoidCallback retry;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currency = ref.watch(displayCurrencyProvider);
     final totalText = balance.when(
-      data: (value) => value.hasValuation
-          ? 'KSh' + formatWalletMoney(value.totalKes)
-          : 'KSh--',
-      loading: () => 'KSh0.00',
-      error: (error, stack) => 'KSh--',
+      data: (value) => formatWalletDisplayValue(
+        value.valueIn(value.totalKes, currency), currency),
+      loading: () => formatWalletDisplayValue(0, currency),
+      error: (error, stack) => formatWalletDisplayValue(null, currency),
     );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            const Text('Est. Total Value(KES)',
-                style: TextStyle(color: _muted, fontSize: 12)),
-            const SizedBox(width: 5),
-            _svg('balance_chevron', 14),
-          ],
+        DisplayCurrencyPicker(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Est. Total Value(${currency.code})',
+                  style: const TextStyle(color: _muted, fontSize: 12)),
+              const SizedBox(width: 5),
+              _svg('balance_chevron', 14),
+            ],
+          ),
         ),
         const SizedBox(height: 6),
         Row(
@@ -323,6 +328,7 @@ class _BalanceSection extends StatelessWidget {
             Expanded(
               child: Text(
                 totalText,
+                key: const Key('home-converted-total'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -347,15 +353,28 @@ class _BalanceSection extends StatelessWidget {
             ),
           ],
         ),
+        if (currency != WalletDisplayCurrency.kes &&
+            balance.asData?.value.hasValuation == true) ...[
+          const SizedBox(height: 3),
+          Text(
+            '≈KSh${formatWalletMoney(balance.asData!.value.totalKes)}',
+            key: const Key('home-kes-equivalent'),
+            style: const TextStyle(color: _muted, fontSize: 12),
+          ),
+        ],
         const SizedBox(height: 4),
         Row(
           children: [
             const Text("Today's PNL",
                 style: TextStyle(color: _muted, fontSize: 12)),
             const SizedBox(width: 6),
-            const Text('KSh0.00 (0.00%)',
-                style: TextStyle(color: _muted, fontSize: 12,
-                    fontWeight: FontWeight.w500)),
+            Text(
+              currency == WalletDisplayCurrency.kes
+                  ? 'KSh0.00 (0.00%)'
+                  : '0.00 ${currency.code} (0.00%)',
+              style: const TextStyle(color: _muted, fontSize: 12,
+                  fontWeight: FontWeight.w500),
+            ),
           ],
         ),
         if (balance.asData?.value.hasValuation == false) ...[
