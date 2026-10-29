@@ -67,14 +67,31 @@ void main() {
       ),
     ));
     expect(container.read(displayCurrencyProvider), WalletDisplayCurrency.kes);
-    await tester.tap(find.byKey(const Key('display-currency-picker')));
+    final button = find.byKey(const Key('display-currency-picker'));
+    await tester.tap(button);
     await tester.pumpAndSettle();
+
+    // The dropdown must appear directly UNDER its trigger on the right,
+    // never on the far left or with the selected KES item at the trigger.
+    final popup = find.byKey(const Key('display-currency-menu'));
+    final anchorRect = tester.getRect(button);
+    final popupRect = tester.getRect(popup);
+    expect(popupRect.top, greaterThanOrEqualTo(anchorRect.bottom));
+    expect(popupRect.left, greaterThanOrEqualTo(anchorRect.left - 5));
+    expect(popupRect.width, lessThanOrEqualTo(132));
+
     for (final code in const ['BTC', 'ETH', 'BNB', 'USDT', 'KES']) {
       expect(find.text(code), findsOneWidget);
     }
     await tester.tap(find.text('USDT'));
     await tester.pumpAndSettle();
     expect(container.read(displayCurrencyProvider), WalletDisplayCurrency.usdt);
+
+    // Opening it again after choosing another currency must stay below.
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(tester.getRect(popup).top,
+        greaterThanOrEqualTo(tester.getRect(button).bottom));
   });
 
   test('shared dark palette uses lighter blue-charcoal surfaces on all tabs', () {
