@@ -607,8 +607,9 @@ class _DepositMethodState extends State<_DepositMethod> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: const Key('home-bank-transfer-card'),
       width: 192,
-      height: 144,
+      height: 190,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: _card,
@@ -647,7 +648,7 @@ class _DepositMethodState extends State<_DepositMethod> {
               ),
             ],
           ),
-          const SizedBox(height: 9),
+          const SizedBox(height: 30),
           Expanded(
             child: PageView(
               key: const Key('home-bank-transfer-carousel'),

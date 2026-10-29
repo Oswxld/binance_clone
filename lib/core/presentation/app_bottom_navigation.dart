@@ -63,14 +63,15 @@ class AppBottomNavigation extends StatelessWidget {
           Expanded(
             child: Center(
               child: Container(
-                width: 46,
-                height: 46,
+                key: const Key('bottom-trade-circle'),
+                width: 62,
+                height: 62,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   color: _yellow,
                   shape: BoxShape.circle,
                 ),
-                child: _icon('trade', 24),
+                child: _icon('trade', 32),
               ),
             ),
           ),

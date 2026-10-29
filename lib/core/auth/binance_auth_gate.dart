@@ -11,7 +11,7 @@ import '../notifications/binance_push_service.dart';
 import '../theme/binance_palette.dart';
 
 /// The home shell is only mounted after a real Supabase session and the
-/// account's zero wallet row have been verified or initialized.
+/// account's one-time, server-initialized starter wallet is ready.
 class BinanceAuthGate extends ConsumerStatefulWidget {
   const BinanceAuthGate({super.key});
 
@@ -65,7 +65,7 @@ class _BinanceAuthGateState extends ConsumerState<BinanceAuthGate> {
     });
 
     try {
-      await _initializeZeroBalance(user.id);
+      await _initializeStarterBalance();
       if (!mounted || generation != _generation) return;
       ref.invalidate(homeBalanceProvider);
       setState(() {
@@ -85,24 +85,16 @@ class _BinanceAuthGateState extends ConsumerState<BinanceAuthGate> {
     }
   }
 
-  Future<void> _initializeZeroBalance(String ownerId) async {
-    final existing = await _client
-        .from('b_balances')
-        .select('id')
-        .eq('owner_id', ownerId)
-        .maybeSingle();
-    if (existing != null) return;
-
-    // Server policy permits INSERT only for auth.uid() and zero amounts.
-    // Never overwrite an existing balance; credits are trigger-controlled.
-    try {
-      await _client.from('b_balances').insert({
-        'owner_id': ownerId,
-        'usdt_balance': 0,
-        'btc_balance': 0,
-      });
-    } on PostgrestException catch (error) {
-      if (error.code != '23505') rethrow; // harmless concurrent first login
+  Future<void> _initializeStarterBalance() async {
+    // The Edge Function validates the user's session, fetches the BTC/KES
+    // exchange rate and awards the fixed demo starter balance only once.
+    final response = await _client.functions.invoke(
+      'binance-starter-wallet',
+      body: <String, dynamic>{},
+    );
+    final data = response.data;
+    if (data is! Map || data['ok'] != true) {
+      throw StateError('Starter wallet initialization did not complete.');
     }
   }
 

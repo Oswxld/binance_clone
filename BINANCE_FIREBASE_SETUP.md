@@ -2,8 +2,8 @@
 
 ## Already implemented
 - Supabase email/password login and sign-up displayed before Home.
-- On successful session, create a **0 USDT / 0 BTC** row in `b_balances` only if the owner does not have one.
-- Home and Assets subscribe to `b_balances.owner_id == auth.uid()`.
+- After login, the authenticated `binance-starter-wallet` Edge Function seeds **2 USDT** and **BTC worth approximately KSh 12** using a server-fetched BTC/KES exchange rate. The grant happens only once, including for preexisting unseeded zero-balance wallets; existing funded or already-seeded wallets remain unchanged. BTC's KES value changes with the market.
+- Home and Assets subscribe to `b_balances.owner_id == auth.uid()`. The one-time grant is tracked by `starter_credited_at`. Clients cannot directly insert or change wallet balances.
 - Push token registered in `b_device_tokens` after permission, with `owner_id`, `fcm_target`, `platform`, `last_seen_at`.
 - Foreground: inline notification banner. Background/closed: normal OS notification.
 - Sign out using the avatar on Home; its device token is removed.
