@@ -145,40 +145,48 @@ class _PortfolioHeader extends ConsumerWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Amount and its currency selector form ONE compact group.
-            // They shrink together on narrow phones without pushing the
-            // currency label against the graph on the opposite side.
+            // The value stays on the left; ONLY the small currency + arrow
+            // controls the popup, anchoring it on the right as in Binance.
             Expanded(
-              child: DisplayCurrencyPicker(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          totalText,
-                          key: const Key('assets-converted-total'),
-                          maxLines: 1,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 28,
-                            letterSpacing: -0.45,
-                          ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        totalText,
+                        key: const Key('assets-converted-total'),
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 28,
+                          letterSpacing: -0.45,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 5),
-                    Text(currency.code, style: const TextStyle(
-                      fontSize: 11, color: _white,
-                      fontWeight: FontWeight.w500,
-                    )),
-                    const SizedBox(width: 2),
-                    _icon('asset_currency_chevron', 11),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 5),
+                  DisplayCurrencyPicker(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(currency.code, style: const TextStyle(
+                            fontSize: 11,
+                            color: _white,
+                            fontWeight: FontWeight.w500,
+                          )),
+                          const SizedBox(width: 3),
+                          _icon('asset_currency_chevron', 11),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 8),
