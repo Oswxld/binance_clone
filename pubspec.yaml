@@ -27,3 +27,6 @@ flutter:
   assets:
     - .env
     - assets/svgs/
+    - assets/svgs/home_icons/
+    - assets/svgs/invest_icons/
+    - assets/svgs/market_icons/

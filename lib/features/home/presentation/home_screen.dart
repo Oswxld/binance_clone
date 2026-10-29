@@ -479,15 +479,14 @@ class _RewardsCardState extends State<_RewardsCard> {
                 itemBuilder: (context, index) {
                   return Row(
                     children: [
-                      Container(
-                        width: 34,
-                        height: 34,
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF03A66D),
-                          shape: BoxShape.circle,
+                      ClipOval(
+                        child: Image.asset(
+                          'assets/svgs/home_icons/USDT.png',
+                          key: const Key('home-rewards-usdt-icon'),
+                          width: 34,
+                          height: 34,
+                          fit: BoxFit.cover,
                         ),
-                        child: _svg('rewards', 20),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -781,29 +780,24 @@ class _MarketsSection extends StatelessWidget {
             ),
           ),
           const _MarketRow(
-            name: 'BNB', caption: 'BNB', icon: 'bnb', emoji: '🔥',
-            iconBg: _yellow, price: '751.79',
-            kes: 'KSh 97,785.33', change: '+0.49%',
+            name: 'BNB', caption: 'BNB', emoji: '🔥',
+            price: '751.79', kes: 'KSh 97,785.33', change: '+0.49%',
           ),
           const _MarketRow(
-            name: 'BTC', caption: 'Bitcoin', symbol: '₿', emoji: '🔥',
-            iconBg: Color(0xFFF7931A), price: '81,147.38',
-            kes: 'KSh 10,554,839.72', change: '+0.65%',
+            name: 'BTC', caption: 'Bitcoin', emoji: '🔥',
+            price: '81,147.38', kes: 'KSh 10,554,839.72', change: '+0.65%',
           ),
           const _MarketRow(
-            name: 'ETH', caption: 'Ethereum', icon: 'eth', emoji: '🔥',
-            iconBg: Color(0xFF627EEA), price: '2,357.43',
-            kes: 'KSh 306,630.92', change: '+0.69%',
+            name: 'ETH', caption: 'Ethereum', emoji: '🔥',
+            price: '2,357.43', kes: 'KSh 306,630.92', change: '+0.69%',
           ),
           const _MarketRow(
-            name: 'PEPE', caption: 'Pepe', symbol: '🐸',
-            iconBg: Color(0xFF398039), price: '0.00000489',
-            kes: 'KSh 0.00063604', change: '+9.15%',
+            name: 'PEPE', caption: 'Pepe',
+            price: '0.00000489', kes: 'KSh 0.00063604', change: '+9.15%',
           ),
           const _MarketRow(
-            name: 'SOL', caption: 'Solana', icon: 'sol',
-            iconBg: Color(0xFF141414), price: '102.12',
-            kes: 'KSh 13,282.75', change: '+1.03%',
+            name: 'SOL', caption: 'Solana',
+            price: '102.12', kes: 'KSh 13,282.75', change: '+1.03%',
           ),
           const SizedBox(height: 4),
           const Padding(
@@ -828,21 +822,15 @@ class _MarketRow extends StatelessWidget {
   const _MarketRow({
     required this.name,
     required this.caption,
-    required this.iconBg,
     required this.price,
     required this.kes,
     required this.change,
-    this.icon,
-    this.symbol,
     this.emoji,
   });
 
   final String name;
   final String caption;
-  final String? icon;
-  final String? symbol;
   final String? emoji;
-  final Color iconBg;
   final String price;
   final String kes;
   final String change;
@@ -856,22 +844,18 @@ class _MarketRow extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                Container(
-                  width: 25,
-                  height: 25,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: iconBg,
-                    border: name == 'SOL'
-                        ? Border.all(color: _border) : null,
+                ClipOval(
+                  child: Image.asset(
+                    // PEPE is only provided in market_icons. The other
+                    // home market symbols have dedicated home_icons assets.
+                    name == 'PEPE'
+                        ? 'assets/svgs/market_icons/PEPE.png'
+                        : 'assets/svgs/home_icons/$name.png',
+                    key: ValueKey('home-coin-icon-$name'),
+                    width: 25,
+                    height: 25,
+                    fit: BoxFit.cover,
                   ),
-                  child: icon != null
-                      ? _svg(icon!, 15)
-                      : Text(symbol ?? name.substring(0, 1),
-                          style: const TextStyle(
-                              color: _white, fontSize: 13,
-                              fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(width: 8),
                 Flexible(

@@ -18,6 +18,18 @@ Widget _investSvg(String name, double size) => SvgPicture.asset(
       height: size,
     );
 
+// Asset logos supplied for the Invest page. Keep coin and stock logos intact
+// rather than painting generic initials onto placeholder circles.
+Widget _investCoinIcon(String ticker, double size) => ClipOval(
+      child: Image.asset(
+        'assets/svgs/invest_icons/$ticker.png',
+        key: ValueKey('invest-coin-icon-$ticker'),
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+      ),
+    );
+
 class InvestScreen extends StatelessWidget {
   const InvestScreen({super.key});
 
@@ -147,19 +159,9 @@ class _EarnCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 23),
-          const _EarnAssetRow(
-            ticker: 'USDC',
-            apr: '5.03%',
-            iconColor: Color(0xFF2775CA),
-            isUsdc: true,
-          ),
+          const _EarnAssetRow(ticker: 'USDC', apr: '5.03%'),
           const SizedBox(height: 20),
-          const _EarnAssetRow(
-            ticker: 'U',
-            apr: '6.12%',
-            iconColor: Color(0xFF121214),
-            isUsdc: false,
-          ),
+          const _EarnAssetRow(ticker: 'U', apr: '6.12%'),
         ],
       ),
     );
@@ -170,39 +172,16 @@ class _EarnAssetRow extends StatelessWidget {
   const _EarnAssetRow({
     required this.ticker,
     required this.apr,
-    required this.iconColor,
-    required this.isUsdc,
   });
 
   final String ticker;
   final String apr;
-  final Color iconColor;
-  final bool isUsdc;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 28,
-          height: 28,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: iconColor,
-            shape: BoxShape.circle,
-            border: isUsdc ? null : Border.all(
-              color: const Color(0xFF3B414D),
-            ),
-          ),
-          child: Text(
-            isUsdc ? String.fromCharCode(36) : 'U',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        _investCoinIcon(ticker, 28),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
@@ -274,8 +253,6 @@ class _HotCryptoCard extends StatelessWidget {
             price: '748.41',
             priceKes: 'KSh97,293.30',
             change: '-0.15%',
-            iconColor: Color(0xFFF3BA2F),
-            svg: 'invest_bnb',
           ),
           SizedBox(height: 18),
           _QuoteRow(
@@ -284,8 +261,6 @@ class _HotCryptoCard extends StatelessWidget {
             price: '80,794.00',
             priceKes: 'KSh10,503,220.00',
             change: '+0.24%',
-            iconColor: Color(0xFFF7931A),
-            glyph: '₿',
           ),
           SizedBox(height: 18),
           _QuoteRow(
@@ -294,8 +269,6 @@ class _HotCryptoCard extends StatelessWidget {
             price: '2,343.67',
             priceKes: 'KSh304,677.10',
             change: '-0.15%',
-            iconColor: Color(0xFF627EEA),
-            svg: 'invest_eth',
           ),
         ],
       ),
@@ -321,8 +294,6 @@ class _StocksCard extends StatelessWidget {
             price: '610.35',
             priceKes: 'KSh79,345.24',
             change: '-1.49%',
-            iconColor: Colors.white,
-            svg: 'invest_meta',
           ),
           SizedBox(height: 18),
           _QuoteRow(
@@ -331,8 +302,6 @@ class _StocksCard extends StatelessWidget {
             price: '967.89',
             priceKes: 'KSh125,825.57',
             change: '+4.30%',
-            iconColor: Color(0xFF002D62),
-            glyph: 'Micron',
           ),
         ],
       ),
@@ -389,9 +358,6 @@ class _QuoteRow extends StatelessWidget {
     required this.price,
     required this.priceKes,
     required this.change,
-    required this.iconColor,
-    this.svg,
-    this.glyph,
   });
 
   final String symbol;
@@ -399,9 +365,6 @@ class _QuoteRow extends StatelessWidget {
   final String price;
   final String priceKes;
   final String change;
-  final Color iconColor;
-  final String? svg;
-  final String? glyph;
 
   @override
   Widget build(BuildContext context) {
@@ -412,12 +375,7 @@ class _QuoteRow extends StatelessWidget {
         Expanded(
           child: Row(
             children: [
-              _AssetIcon(
-                symbol: symbol,
-                color: iconColor,
-                svg: svg,
-                glyph: glyph,
-              ),
+              _investCoinIcon(symbol, 32),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -498,51 +456,6 @@ class _QuoteRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _AssetIcon extends StatelessWidget {
-  const _AssetIcon({
-    required this.symbol,
-    required this.color,
-    this.svg,
-    this.glyph,
-  });
-
-  final String symbol;
-  final Color color;
-  final String? svg;
-  final String? glyph;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 32,
-      height: 32,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
-      child: svg != null
-          ? Padding(
-              padding: const EdgeInsets.all(6),
-              child: _investSvg(svg!, 20),
-            )
-          : Text(
-              glyph ?? symbol.substring(0, 1),
-              style: TextStyle(
-                color: symbol == 'MU'
-                    ? const Color(0xFF00A1E0)
-                    : Colors.white,
-                fontSize: symbol == 'MU' ? 8 : 17,
-                fontWeight: FontWeight.bold,
-                fontStyle: symbol == 'BTC'
-                    ? FontStyle.italic
-                    : FontStyle.normal,
-              ),
-            ),
     );
   }
 }

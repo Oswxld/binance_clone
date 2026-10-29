@@ -327,9 +327,6 @@ class _MarketCoin {
     required this.price,
     required this.priceKes,
     required this.change,
-    required this.iconColor,
-    this.svgIcon,
-    this.iconText,
     this.leverage = '10x',
   });
 
@@ -339,9 +336,6 @@ class _MarketCoin {
   final String price;
   final String priceKes;
   final String change;
-  final Color iconColor;
-  final String? svgIcon;
-  final String? iconText;
   final String leverage;
 
   bool get up => change.startsWith('+');
@@ -349,43 +343,29 @@ class _MarketCoin {
 
 const _coins = <_MarketCoin>[
   _MarketCoin(ticker: 'USDC', name: 'USDC', volume: '1.48B',
-      price: '1.00079', priceKes: 'KSh 130.1', change: '-0.02%',
-      iconColor: Color(0xFF2775CA)),
+      price: '1.00079', priceKes: 'KSh 130.1', change: '-0.02%'),
   _MarketCoin(ticker: 'BTC', name: 'Bitcoin', volume: '949.98M',
       price: '80,752.77', priceKes: 'KSh 10,497,860.1',
-      change: '+0.18%', iconColor: Color(0xFFF7931A),
-      iconText: '₿'),
+      change: '+0.18%'),
   _MarketCoin(ticker: 'ETH', name: 'Ethereum', volume: '341.18M',
-      price: '2,342.18', priceKes: 'KSh 304,483.39',
-      change: '-0.22%', iconColor: Color(0xFF627EEA),
-      svgIcon: 'markets_eth'),
+      price: '2,342.18', priceKes: 'KSh 304,483.39', change: '-0.22%'),
   _MarketCoin(ticker: 'SOL', name: 'Solana', volume: '152.60M',
-      price: '101.43', priceKes: 'KSh 13,185.9',
-      change: '+0.55%', iconColor: Color(0xFF9945FF)),
+      price: '101.43', priceKes: 'KSh 13,185.9', change: '+0.55%'),
   _MarketCoin(ticker: 'ZEC', name: 'Zcash', volume: '125.59M',
-      price: '1,279.99', priceKes: 'KSh 166,398.7',
-      change: '-1.40%', iconColor: Color(0xFFECB244),
-      iconText: 'Z'),
+      price: '1,279.99', priceKes: 'KSh 166,398.7', change: '-1.40%'),
   _MarketCoin(ticker: 'USD1', name: 'World Liberty Fi...', volume: '111.38M',
-      price: '1.00019', priceKes: 'KSh 130.02',
-      change: '+0.01%', iconColor: Color(0xFFC37B12),
-      iconText: '1', leverage: '5x'),
+      price: '1.00019', priceKes: 'KSh 130.02', change: '+0.01%',
+      leverage: '5x'),
   _MarketCoin(ticker: 'XRP', name: 'XRP', volume: '101.20M',
-      price: '1.3185', priceKes: 'KSh 171.4',
-      change: '-0.14%', iconColor: Colors.black,
-      svgIcon: 'markets_xrp'),
+      price: '1.3185', priceKes: 'KSh 171.4', change: '-0.14%'),
   _MarketCoin(ticker: 'PEPE', name: 'Pepe', volume: '88.58M',
-      price: '0.00000487', priceKes: 'KSh 0.0006331',
-      change: '+8.71%', iconColor: Color(0xFF467D34),
-      iconText: '🐸', leverage: '5x'),
+      price: '0.00000487', priceKes: 'KSh 0.0006331', change: '+8.71%',
+      leverage: '5x'),
   _MarketCoin(ticker: 'BNB', name: 'BNB', volume: '88.08M',
-      price: '748.02', priceKes: 'KSh 97,242.59',
-      change: '-0.22%', iconColor: Color(0xFFF3BA2F),
-      svgIcon: 'markets_bnb'),
+      price: '748.02', priceKes: 'KSh 97,242.59', change: '-0.22%'),
   _MarketCoin(ticker: 'NEAR', name: 'NEAR', volume: '84.12M',
-      price: '4.597', priceKes: 'KSh 597.6',
-      change: '-0.80%', iconColor: Colors.white,
-      iconText: 'N', leverage: '5x'),
+      price: '4.597', priceKes: 'KSh 597.6', change: '-0.80%',
+      leverage: '5x'),
 ];
 
 class _MarketCoinRow extends StatelessWidget {
@@ -523,69 +503,13 @@ class _MarketCoinRow extends StatelessWidget {
   }
 
   Widget _icon() {
-    final isSol = coin.ticker == 'SOL';
-    final isNear = coin.ticker == 'NEAR';
-    return Container(
-      width: 24,
-      height: 24,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isSol ? null : coin.iconColor,
-        gradient: isSol
-            ? const LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [Color(0xFF9945FF), Color(0xFF14F195)],
-              )
-            : null,
-        border: coin.ticker == 'XRP'
-            ? Border.all(color: const Color(0xFF374151))
-            : null,
-      ),
-      child: coin.svgIcon != null
-          ? _marketSvg(coin.svgIcon!, 15)
-          : isSol
-              ? const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _SolanaStroke(indented: false),
-                    SizedBox(height: 2),
-                    _SolanaStroke(indented: true),
-                    SizedBox(height: 2),
-                    _SolanaStroke(indented: false),
-                  ],
-                )
-              : Text(
-                  coin.ticker == 'USDC'
-                      ? String.fromCharCode(36)
-                      : (coin.iconText ?? coin.ticker.substring(0, 1)),
-                  style: TextStyle(
-                    color: isNear || coin.ticker == 'ZEC'
-                        ? Colors.black : Colors.white,
-                    fontSize: coin.ticker == 'PEPE' ? 12 : 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-    );
-  }
-}
-
-class _SolanaStroke extends StatelessWidget {
-  const _SolanaStroke({required this.indented});
-  final bool indented;
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.translate(
-      offset: Offset(indented ? 3 : 0, 0),
-      child: Container(
-        width: 12,
-        height: 2,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(2),
-        ),
+    return ClipOval(
+      child: Image.asset(
+        'assets/svgs/market_icons/${coin.ticker}.png',
+        key: ValueKey('markets-coin-icon-${coin.ticker}'),
+        width: 24,
+        height: 24,
+        fit: BoxFit.cover,
       ),
     );
   }
