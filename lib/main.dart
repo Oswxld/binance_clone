@@ -1,10 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'core/presentation/app_shell.dart';
+import 'core/auth/binance_auth_gate.dart';
+import 'core/notifications/binance_push_service.dart';
+import 'firebase_options.dart';
 import 'core/theme/binance_palette.dart';
 
 Future<void> main() async {
@@ -18,6 +22,12 @@ Future<void> main() async {
     throw StateError('Add SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY to .env.');
   }
   await Supabase.initialize(url: url, publishableKey: key);
+  // Run flutterfire configure --project=mail-demo-push --platforms=android
+  // before building. It generates firebase_options.dart and native config.
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging.onBackgroundMessage(binanceBackgroundFcmHandler);
   // Let Android render the real clock, notifications, connectivity, battery,
   // and system navigation. SafeArea keeps Flutter content below/above them.
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -55,7 +65,8 @@ class BinanceCloneApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Roboto',
       ),
-      home: const AppShell(),
+      scaffoldMessengerKey: binanceScaffoldMessengerKey,
+      home: const BinanceAuthGate(),
     );
   }
 }

@@ -11,7 +11,9 @@ import '../theme/binance_palette.dart';
 /// Switching tabs only replaces the page content, preserving navigation layout
 /// and each tab's state (including scroll position) in an IndexedStack.
 class AppShell extends StatefulWidget {
-  const AppShell({super.key});
+  const AppShell({super.key, this.onSignOut});
+
+  final Future<void> Function()? onSignOut;
 
   @override
   State<AppShell> createState() => _AppShellState();
@@ -32,11 +34,11 @@ class _AppShellState extends State<AppShell> {
             Expanded(
               child: IndexedStack(
                 index: _selected.index,
-                children: const [
-                  HomeScreen(),
-                  MarketsScreen(),
-                  InvestScreen(),
-                  AssetsScreen(),
+                children: [
+                  HomeScreen(onSignOut: widget.onSignOut),
+                  const MarketsScreen(),
+                  const InvestScreen(),
+                  const AssetsScreen(),
                 ],
               ),
             ),

@@ -23,7 +23,9 @@ Widget _svg(String name, double size) =>
     SvgPicture.asset('assets/svgs/' + name + '.svg', width: size, height: size);
 
 class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.onSignOut});
+
+  final Future<void> Function()? onSignOut;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +37,7 @@ class HomeScreen extends ConsumerWidget {
         children: [
             Column(
               children: [
-                const _TopNavigation(),
+                _TopNavigation(onSignOut: onSignOut),
                 Expanded(
                   child: RefreshIndicator(
                     color: _yellow,
@@ -85,7 +87,32 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class _TopNavigation extends StatelessWidget {
-  const _TopNavigation();
+  const _TopNavigation({this.onSignOut});
+
+  final Future<void> Function()? onSignOut;
+
+  Future<void> _confirmSignOut(BuildContext context) async {
+    if (onSignOut == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: BinancePalette.surface,
+        title: const Text('Sign out?'),
+        content: const Text('You can sign back in to view your wallet.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Sign out'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) await onSignOut!();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,16 +123,25 @@ class _TopNavigation extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 28,
-                height: 28,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: BinancePalette.raised,
-                  border: Border.all(color: BinancePalette.border),
-                  shape: BoxShape.circle,
+              GestureDetector(
+                key: const Key('home-account-avatar'),
+                onTap: onSignOut == null
+                    ? null
+                    : () => _confirmSignOut(context),
+                child: Tooltip(
+                  message: onSignOut == null ? 'Account' : 'Account / Sign out',
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: BinancePalette.raised,
+                      border: Border.all(color: BinancePalette.border),
+                      shape: BoxShape.circle,
+                    ),
+                    child: _svg('avatar', 16),
+                  ),
                 ),
-                child: _svg('avatar', 16),
               ),
               const SizedBox(width: 12),
               _svg('support', 20),

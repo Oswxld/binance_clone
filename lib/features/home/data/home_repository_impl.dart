@@ -15,10 +15,16 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Stream<HomeBalance> watchBalance() {
+    final ownerId = _client.auth.currentUser?.id;
+    if (ownerId == null) {
+      return Stream<HomeBalance>.error(
+        StateError('Sign in before watching a wallet balance.'),
+      );
+    }
     return _client
         .from('b_balances')
         .stream(primaryKey: ['id'])
-        .eq('id', 1)
+        .eq('owner_id', ownerId)
         .asyncMap((rows) async {
       if (rows.isEmpty) return const HomeBalance.zero();
 
@@ -26,8 +32,8 @@ class HomeRepositoryImpl implements HomeRepository {
       final usdt = double.parse(row['usdt_balance'].toString());
       final btc = double.parse(row['btc_balance'].toString());
 
-      // The demo's seeded row is zero, so startup works offline from
-      // the external price provider. Never invent nonzero holdings.
+      // Each authenticated account owns its own wallet. A zero balance
+      // doesn't need an external quote; never invent nonzero holdings.
       if (usdt == 0 && btc == 0) return const HomeBalance.zero();
 
       try {
