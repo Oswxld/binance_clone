@@ -34,6 +34,17 @@ void main() {
       find.byKey(const Key('nav-shaped-background')),
     );
     expect(shaped.painter, isNotNull);
+
+    // In the reference the yellow circle finishes at about the same
+    // baseline as the Markets label; it must not hover high above it.
+    final nav = tester.getRect(find.byType(AppBottomNavigation));
+    final circle = tester.getRect(find.byKey(const Key('bottom-trade-circle')));
+    final marketsLabel = tester.getRect(find.text('Markets'));
+    expect((circle.center.dx - nav.center.dx).abs(), lessThan(0.5));
+    expect((circle.bottom - marketsLabel.bottom).abs(), lessThan(4));
+    // The circle is a small amount higher than the straight divider,
+    // rather than floating far above the navigation.
+    expect(circle.top - nav.top, 18);
   });
 
   testWidgets('bank card grows taller and keeps both carousel actions',

@@ -36,9 +36,9 @@ class AppBottomNavigation extends StatelessWidget {
     final investSelected = selected == AppTab.invest;
     final assetsSelected = selected == AppTab.assets;
 
-    // The navigation edge rises smoothly over the Trade circle and returns
-    // to the straight border. It is one painted path, never a line drawn
-    // behind the yellow circle.
+    // The edge has a shallow raised dome, rather than a high cutout.
+    // The yellow button sits only slightly above the normal divider,
+    // with its bottom aligned to the neighboring tab labels.
     return SizedBox(
       height: 82,
       child: LayoutBuilder(
@@ -54,7 +54,7 @@ class AppBottomNavigation extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: 25,
+                top: 27,
                 left: 10,
                 right: 10,
                 child: Row(
@@ -97,7 +97,7 @@ class AppBottomNavigation extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: 7,
+                top: 18,
                 left: centerX - 26,
                 child: Container(
                   key: const Key('bottom-trade-circle'),
@@ -165,17 +165,21 @@ class _NavigationContourPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Baseline at y=24: the circle begins at y=18, just 6px above it.
+    // The rim rises 13px at center, leaving a soft 7px clearance above
+    // the 52px circle. Horizontal tangents avoid sharp joins to the line.
     const shoulderY = 24.0;
-    const crestY = 1.0;
+    const crestY = 11.0;
+    const shoulderWidth = 40.0;
     final centerX = size.width / 2;
 
     final contour = Path()
       ..moveTo(0, shoulderY)
-      ..lineTo(centerX - 42, shoulderY)
-      ..cubicTo(centerX - 30, shoulderY,
-          centerX - 36, crestY, centerX, crestY)
-      ..cubicTo(centerX + 36, crestY,
-          centerX + 30, shoulderY, centerX + 42, shoulderY)
+      ..lineTo(centerX - shoulderWidth, shoulderY)
+      ..cubicTo(centerX - 29, shoulderY,
+          centerX - 31, crestY, centerX, crestY)
+      ..cubicTo(centerX + 31, crestY,
+          centerX + 29, shoulderY, centerX + shoulderWidth, shoulderY)
       ..lineTo(size.width, shoulderY);
 
     final filled = Path.from(contour)
