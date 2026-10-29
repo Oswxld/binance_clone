@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:binance/core/theme/binance_palette.dart';
 import 'package:binance/features/assets/presentation/assets_screen.dart';
 import 'package:binance/features/home/domain/home_balance.dart';
 import 'package:binance/features/home/presentation/home_provider.dart';
@@ -43,13 +44,21 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 350));
 
-    expect(find.text('USDT 95.6%'), findsOneWidget);
-    expect(find.text('BTC 4.4%'), findsOneWidget);
-    expect(find.byKey(const Key('allocation-indicative-price-label')),
-        findsOneWidget);
+    // The reference design has a short allocation card: just title + bar.
+    // The split still comes from the live KES values, without a legend.
+    expect(find.textContaining('USDT 95.6%'), findsNothing);
+    expect(find.textContaining('BTC 4.4%'), findsNothing);
+    final allocationCard = find.byKey(const Key('assets-allocation-card'));
+    expect(tester.getSize(allocationCard).height, lessThan(80));
+    expect(tester.getSize(allocationCard).height, greaterThan(50));
 
     final usdtSegment = find.byKey(const Key('allocation-usdt-segment'));
+    final btcSegment = find.byKey(const Key('allocation-btc-segment'));
+    final blueWidth = tester.getSize(usdtSegment).width;
+    final yellowWidth = tester.getSize(btcSegment).width;
     expect(tester.getSize(usdtSegment).height, 7);
+    expect(blueWidth / (blueWidth + yellowWidth),
+        closeTo(260 / 272, 0.01));
 
     final usdtIcon = tester.widget<Image>(
       find.byKey(const ValueKey('assets-coin-icon-USDT')),
@@ -73,11 +82,21 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 350));
 
-    expect(find.text('USDT 25.0%'), findsOneWidget);
-    expect(find.text('BTC 75.0%'), findsOneWidget);
-    expect(find.byKey(const Key('allocation-indicative-price-label')),
-        findsNothing);
-    expect(tester.getSize(find.byKey(const Key('allocation-btc-segment'))).height,
-        7);
+    final updatedBlue = tester.getSize(usdtSegment).width;
+    final updatedYellow = tester.getSize(btcSegment).width;
+    expect(updatedBlue / (updatedBlue + updatedYellow),
+        closeTo(0.25, 0.01));
+    expect(tester.getSize(btcSegment).height, 7);
+    // Balance and Allocation headings are softer than their primary figures.
+    expect(tester.widget<Text>(find.text('Balance')).style?.color,
+        BinancePalette.textSecondary);
+    expect(tester.widget<Text>(find.text('Allocation')).style?.color,
+        BinancePalette.textSecondary);
+    expect(tester.widget<Text>(find.text('KES')).style?.color,
+        BinancePalette.textPrimary);
+    expect(tester.widget<Text>(find.text('Est. Total Value')).style?.color,
+        BinancePalette.textPrimary);
+    expect(tester.widget<Text>(find.text("Today's PNL")).style?.color,
+        BinancePalette.textPrimary);
   });
 }

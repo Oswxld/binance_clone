@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:binance/core/theme/binance_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:binance/features/assets/presentation/select_currency_screen.dart';
 import 'package:binance/features/assets/presentation/select_method_screen.dart';
@@ -10,6 +11,13 @@ import 'package:binance/core/utils/wallet_amount_formatter.dart';
 import 'package:binance/features/assets/domain/wallet_allocation.dart';
 
 void main() {
+  test('shared dark palette uses lighter blue-charcoal surfaces on all tabs', () {
+    expect(BinancePalette.canvas, const Color(0xFF1F2630));
+    expect(BinancePalette.surface, const Color(0xFF272F3A));
+    expect(BinancePalette.raised, const Color(0xFF333B48));
+    expect(BinancePalette.divider, const Color(0xFF303847));
+  });
+
   test('USDT and BTC holdings are both included in KES total', () {
     final result = HomeBalance.valued(
       usdt: 2.5,

@@ -510,9 +510,11 @@ class _AssetBalanceRow extends StatelessWidget {
             padding: EdgeInsets.only(left: 34),
             child: Row(
               children: [
-                Text('Unrealized PNL',
-                style: TextStyle(color: _muted, fontSize: 10.5)),
-              Spacer(),
+                Text(
+                  'Unrealized PNL',
+                  style: TextStyle(color: _muted, fontSize: 10.5),
+                ),
+                Spacer(),
                 Text('KSh0.00 (0.00%)',
                   style: TextStyle(color: _muted, fontSize: 10.5)),
               ],
