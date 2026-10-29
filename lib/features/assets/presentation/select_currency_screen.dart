@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -23,7 +22,6 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen>
   final GlobalKey _letterAKey = GlobalKey();
   String _search = '';
   late final AnimationController _equalizerController;
-  Timer? _usdtNavigationTimer;
   bool _isUsdtLoading = false;
 
   static const _indexLetters = <String>[
@@ -37,13 +35,14 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen>
     super.initState();
     _equalizerController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 850),
     );
   }
 
   @override
   void dispose() {
-    _usdtNavigationTimer?.cancel();
+    // Prevent any pending ticker completion from navigating after disposal.
+    _isUsdtLoading = false;
     _equalizerController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -55,21 +54,17 @@ class _SelectCurrencyScreenState extends State<SelectCurrencyScreen>
     if (_isUsdtLoading) return;
     FocusScope.of(context).unfocus();
     setState(() => _isUsdtLoading = true);
-    _equalizerController.repeat();
-    _usdtNavigationTimer?.cancel();
-    _usdtNavigationTimer = Timer(
-      const Duration(milliseconds: 900),
-      () {
-        if (!mounted) return;
-        _equalizerController.stop();
-        setState(() => _isUsdtLoading = false);
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => const SelectMethodScreen(),
-          ),
-        );
-      },
-    );
+    // Play exactly one 850 ms cycle; navigate only when it completes.
+    // No arbitrary 3.2-second delay and no animation on Select Method.
+    _equalizerController.forward(from: 0).whenCompleteOrCancel(() {
+      if (!mounted || !_isUsdtLoading) return;
+      setState(() => _isUsdtLoading = false);
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const SelectMethodScreen(),
+        ),
+      );
+    });
   }
 
   List<_CurrencyOption> _matching(List<_CurrencyOption> group) {
