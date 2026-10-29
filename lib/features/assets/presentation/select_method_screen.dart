@@ -9,7 +9,7 @@ import '../../../core/theme/binance_palette.dart';
 class SelectMethodScreen extends StatelessWidget {
   const SelectMethodScreen({super.key});
 
-  void _unavailable(String title) {
+  void _unavailable(BuildContext context, String title) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -59,40 +59,40 @@ class SelectMethodScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 22),
           children: [
-                const _MethodSectionHeading('Deposit from Wallet'),
-                const SizedBox(height: 11),
-                _MethodCard(
-                  title: 'Deposit Asset',
-                  description:
-                      'Deposit Crypto from other exchanges/wallets to Binance',
-                  icon: Icons.account_balance_wallet_outlined,
-                  onTap: () => _unavailable('Deposit Asset'),
-                ),
-                const SizedBox(height: 12),
-                _MethodCard(
-                  title: 'Receive Via Binance Pay',
-                  description: 'Receive crypto from other Binance users',
-                  icon: Icons.qr_code_2_rounded,
-                  onTap: () => _unavailable('Receive Via Binance Pay'),
-                ),
-                const SizedBox(height: 25),
-                const _MethodSectionHeading('Purchase Crypto'),
-                const SizedBox(height: 11),
-                _MethodCard(
-                  title: 'P2P Trading',
-                  description:
-                      'Buy crypto via Bank Transfer, Mobile Payment and more',
-                  icon: Icons.people_outline_rounded,
-                  onTap: () => _unavailable('P2P Trading'),
-                ),
-                const SizedBox(height: 12),
-                _MethodCard(
-                  title: 'Buy with KES',
-                  description:
-                      'Buy crypto with Card, Apple Pay, Google Pay, and more',
-                  icon: Icons.credit_card_outlined,
-                  onTap: () => _unavailable('Buy with KES'),
-                ),
+            const _MethodSectionHeading('Deposit from Wallet'),
+              const SizedBox(height: 11),
+              _MethodCard(
+                title: 'Deposit Asset',
+                description:
+                    'Deposit Crypto from other exchanges/wallets to Binance',
+                icon: Icons.account_balance_wallet_outlined,
+                onTap: () => _unavailable(context, 'Deposit Asset'),
+              ),
+              const SizedBox(height: 12),
+              _MethodCard(
+                title: 'Receive Via Binance Pay',
+                description: 'Receive crypto from other Binance users',
+                icon: Icons.qr_code_2_rounded,
+                onTap: () => _unavailable(context, 'Receive Via Binance Pay'),
+              ),
+              const SizedBox(height: 25),
+              const _MethodSectionHeading('Purchase Crypto'),
+              const SizedBox(height: 11),
+              _MethodCard(
+                title: 'P2P Trading',
+                description:
+                    'Buy crypto via Bank Transfer, Mobile Payment and more',
+                icon: Icons.people_outline_rounded,
+                onTap: () => _unavailable(context, 'P2P Trading'),
+              ),
+              const SizedBox(height: 12),
+              _MethodCard(
+                title: 'Buy with KES',
+                description:
+                    'Buy crypto with Card, Apple Pay, Google Pay, and more',
+                icon: Icons.credit_card_outlined,
+                onTap: () => _unavailable(context, 'Buy with KES'),
+              ),
           ],
         ),
       ),
