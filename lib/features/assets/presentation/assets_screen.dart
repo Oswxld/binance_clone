@@ -119,6 +119,13 @@ class _PortfolioHeader extends ConsumerWidget {
                 : current.valueIn(current.totalKes, currency),
             currency,
           );
+    // Screenshot-matching PNL is still demo data, not a trading calculation.
+    final demoPnl = current?.valueIn(0.72631392, currency);
+    final demoPnlText = currency == WalletDisplayCurrency.kes
+        ? '-KSh0.72631392 (-0.19%)'
+        : demoPnl == null
+            ? '-- (-0.19%)'
+            : '-${demoPnl.toStringAsFixed(8)} ${currency.code} (-0.19%)';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,29 +185,41 @@ class _PortfolioHeader extends ConsumerWidget {
             const PortfolioSparkline(),
           ],
         ),
+        if (currency != WalletDisplayCurrency.kes &&
+            current != null && current.hasValuation) ...[
+          const SizedBox(height: 6),
+          Text(
+            '≈KSh${formatWalletMoney(current.totalKes)}',
+            key: const Key('assets-kes-equivalent'),
+            style: const TextStyle(color: _muted, fontSize: 12),
+          ),
+        ],
         const SizedBox(height: 8),
-        const Row(
+        Row(
           children: [
-            Text("Today's PNL", style: TextStyle(
+            const Text("Today's PNL", style: TextStyle(
               fontSize: 12,
               color: _white,
               decoration: TextDecoration.underline,
               decorationColor: _white,
               decorationStyle: TextDecorationStyle.dotted,
             )),
-            SizedBox(width: 6),
-            // Screenshot-matching demo figure; not a calculated daily PNL.
-            Text(
-              '-KSh0.72631392 (-0.19%)',
-              key: Key('assets-today-pnl'),
-              style: TextStyle(
-                fontSize: 11.5,
-                color: BinancePalette.red,
-                fontWeight: FontWeight.w500,
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                demoPnlText,
+                key: const Key('assets-today-pnl'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  color: BinancePalette.red,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-            SizedBox(width: 2),
-            Icon(Icons.chevron_right, size: 14, color: _muted),
+            const SizedBox(width: 2),
+            const Icon(Icons.chevron_right, size: 14, color: _muted),
           ],
         ),
         if (current != null && !current.hasValuation) ...[
