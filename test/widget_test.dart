@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:binance/features/assets/presentation/select_currency_screen.dart';
 import 'package:binance/features/assets/presentation/select_method_screen.dart';
+import 'package:binance/features/assets/presentation/choose_network_screen.dart';
 import 'package:binance/features/home/domain/home_balance.dart';
 import 'package:binance/core/utils/wallet_amount_formatter.dart';
 import 'package:binance/features/assets/domain/wallet_allocation.dart';
@@ -144,6 +145,50 @@ void main() {
     expect(find.text('Select Method'), findsOneWidget);
     expect(find.byKey(const Key('usdt-loading-toast')), findsNothing);
     expect(find.byKey(const Key('usdt-equalizer-tile')), findsNothing);
+  });
+
+
+
+  testWidgets('Deposit Asset opens the USDT Choose Network screen',
+      (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: SelectMethodScreen()));
+
+    expect(find.text('Deposit Asset'), findsOneWidget);
+    await tester.tap(find.text('Deposit Asset'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Choose Network'), findsOneWidget);
+    expect(find.text('BSC'), findsOneWidget);
+    expect(find.text('BNB Smart Chain (BEP20)'), findsOneWidget);
+    expect(find.text('TRX'), findsOneWidget);
+    expect(find.text('Min. deposit >0.01 USDT'), findsWidgets);
+    expect(find.byKey(const Key('network-list')), findsOneWidget);
+
+    // Clicking a demo network must not navigate to a fake deposit address.
+    await tester.tap(find.byKey(const ValueKey('network-card-BSC')));
+    await tester.pump();
+    expect(find.text('Choose Network'), findsOneWidget);
+    expect(find.textContaining('not configured yet.'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Select Method'), findsOneWidget);
+  });
+
+  testWidgets('Choose Network includes the full eleven-network catalogue',
+      (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: ChooseNetworkScreen()));
+    for (final code in <String>[
+      'BSC', 'TRX', 'ETH', 'POL', 'PLASMA', 'SOL',
+      'APT', 'ARBITRUM', 'TON', 'AVAXC', 'CELO',
+    ]) {
+      await tester.scrollUntilVisible(
+        find.byKey(ValueKey('network-card-$code')),
+        150,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(find.byKey(ValueKey('network-card-$code')), findsOneWidget);
+    }
   });
 
 

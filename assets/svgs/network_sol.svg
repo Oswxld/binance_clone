@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox"0 0 24 24">
+<!-- Bar 1 -->
+<path d="M4 17.5l2.5-2.5h13.5l-2.5 2.5H4z" fill="#00FFA3"></path>
+<!-- Bar 2 -->
+<path d="M20 12l-2.5-2.5H4l2.5 2.5h13.5z" fill="#00DC82"></path>
+<!-- Bar 3 -->
+<path d="M4 6.5l2.5-2.5h13.5l-2.5 2.5H4z" fill="#DC1FFF"></path>
+</svg>

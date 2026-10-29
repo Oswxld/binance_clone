@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/binance_palette.dart';
+import 'choose_network_screen.dart';
 
 /// Deposit/purchase method selection, styled after the provided Stitch mockup.
 ///
@@ -66,7 +67,13 @@ class SelectMethodScreen extends StatelessWidget {
                 description:
                     'Deposit Crypto from other exchanges/wallets to Binance',
                 icon: Icons.account_balance_wallet_outlined,
-                onTap: () => _unavailable(context, 'Deposit Asset'),
+                onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const ChooseNetworkScreen(
+                        assetSymbol: 'USDT',
+                      ),
+                    ),
+                  ),
               ),
               const SizedBox(height: 12),
               _MethodCard(
