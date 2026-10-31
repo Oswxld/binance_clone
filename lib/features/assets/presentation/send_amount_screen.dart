@@ -79,7 +79,7 @@ class _SendAmountScreenState extends ConsumerState<SendAmountScreen> {
           maxLength: 100,
           style: const TextStyle(color: BinancePalette.textPrimary),
           decoration: const InputDecoration(
-            hintText: 'Optional demo note',
+            hintText: 'Add a note',
             hintStyle: TextStyle(color: BinancePalette.textMuted)),
         ),
         actions: [
@@ -250,7 +250,7 @@ class _SendAmountScreenState extends ConsumerState<SendAmountScreen> {
                   padding: const EdgeInsets.only(top: 9),
                   child: Text(
                     amount > available
-                      ? 'Insufficient ' + widget.asset + ' demo balance'
+                      ? 'Insufficient ' + widget.asset + ' balance'
                       : 'Enter an amount greater than zero (max 10 decimals)',
                     key: const Key('send-amount-warning'),
                     style: const TextStyle(
@@ -259,10 +259,6 @@ class _SendAmountScreenState extends ConsumerState<SendAmountScreen> {
               if (asyncBalance.hasError)
                 const Text('Could not load your wallet.',
                   style: TextStyle(color: BinancePalette.red)),
-              const SizedBox(height: 10),
-              const Text('DEMO • No real recipient is credited.',
-                style: TextStyle(color: BinancePalette.textMuted,
-                  fontSize: 10.5)),
             ],
           ),
         ),
@@ -381,7 +377,7 @@ class _ConfirmPaymentSheetState extends State<_ConfirmPaymentSheet> {
                       color: BinancePalette.textPrimary,
                       fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  const Text('Unverified demo recipient',
+                  const Text('Binance ID',
                     style: TextStyle(
                       color: BinancePalette.textMuted, fontSize: 11)),
                 ],
@@ -392,7 +388,7 @@ class _ConfirmPaymentSheetState extends State<_ConfirmPaymentSheet> {
               formatWalletQuantity(widget.amount) + ' ' + widget.asset,
               sub: widget.approximateKes, symbol: widget.asset)),
             const SizedBox(height: 11),
-            _sheetCard(_summaryRow('Method', 'Spot Account (Demo)')),
+            _sheetCard(_summaryRow('Method', 'Spot Account')),
             const SizedBox(height: 11),
             _sheetCard(_summaryRow('Payment Currency',
               formatWalletQuantity(widget.amount) + ' ' + widget.asset,
@@ -402,14 +398,6 @@ class _ConfirmPaymentSheetState extends State<_ConfirmPaymentSheet> {
               _sheetCard(_summaryRow('Note', widget.note)),
             ],
             const SizedBox(height: 16),
-            const Text(
-              'DEMO ONLY • Confirm subtracts this amount from your own '
-              'Supabase demo balance. It does not transfer funds or verify '
-              'the recipient.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: BinancePalette.textMuted,
-                fontSize: 11, height: 1.4),
-            ),
             if (_error != null) ...[
               const SizedBox(height: 11),
               Text(_error!, key: const Key('send-confirm-error'),
@@ -497,7 +485,7 @@ class DemoSendSuccessScreen extends StatelessWidget {
         backgroundColor: BinancePalette.canvas,
         foregroundColor: BinancePalette.textPrimary,
         surfaceTintColor: Colors.transparent,
-        title: const Text('Demo Transfer'),
+        title: const Text('Transfer'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
@@ -510,7 +498,7 @@ class DemoSendSuccessScreen extends StatelessWidget {
           const Icon(Icons.check_circle_rounded,
             color: BinancePalette.green, size: 76),
           const SizedBox(height: 18),
-          const Text('Demo balance updated',
+          const Text('Balance updated',
             style: TextStyle(color: BinancePalette.textPrimary,
               fontSize: 22, fontWeight: FontWeight.w700)),
           const SizedBox(height: 10),
@@ -521,12 +509,6 @@ class DemoSendSuccessScreen extends StatelessWidget {
           Text('Recipient entered: ' + recipient,
             style: const TextStyle(
               color: BinancePalette.textMuted, fontSize: 12)),
-          const SizedBox(height: 10),
-          const Text('Prototype only. No recipient was credited '
-            'and no real crypto was sent.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: BinancePalette.textMuted, fontSize: 12, height: 1.4)),
           const Spacer(),
           SizedBox(width: double.infinity, height: 49,
             child: FilledButton(

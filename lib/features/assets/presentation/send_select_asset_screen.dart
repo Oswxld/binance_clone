@@ -120,7 +120,7 @@ class _SendSelectAssetState extends ConsumerState<SendSelectAssetScreen> {
               fontSize: 14, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             if (balance.hasError)
-              const Text('Could not load demo wallet',
+              const Text('Could not load your wallet',
                 style: TextStyle(color: BinancePalette.red)),
             if (assets.isEmpty)
               const Text('No matching coins',
@@ -159,11 +159,6 @@ class _SendSelectAssetState extends ConsumerState<SendSelectAssetScreen> {
                   ]),
                 ),
               ),
-            const SizedBox(height: 20),
-            const Text('DEMO WALLET • No real assets will be sent.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: BinancePalette.textMuted,
-                fontSize: 10)),
           ],
         ),
       ),

@@ -111,9 +111,8 @@ class _SendRecipientScreenState extends State<SendRecipientScreen> {
             const SizedBox(height: 11),
             Text(
               _emailPhoneTab
-                ? 'Enter any phone number for this demo.'
-                : 'Binance ID can be found under App Home - Profile. '
-                  'Any number works for this demo.',
+                ? 'Enter phone number'
+                : 'Binance ID can be found under App Home - Profile.',
               style: const TextStyle(
                 color: BinancePalette.textMuted,
                 height: 1.5,
@@ -145,7 +144,7 @@ class _SendRecipientScreenState extends State<SendRecipientScreen> {
                 Text('Recent', style: TextStyle(
                   color: BinancePalette.textPrimary,
                   fontSize: 14, fontWeight: FontWeight.w600)),
-                Text('Demo', style: TextStyle(
+                Text('Edit', style: TextStyle(
                   color: BinancePalette.yellow,
                   fontSize: 12, fontWeight: FontWeight.w600)),
               ]),
@@ -175,15 +174,6 @@ class _SendRecipientScreenState extends State<SendRecipientScreen> {
                   ],
                 ),
               ]),
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'DEMO ONLY • Recipient IDs are not checked against Binance. '
-              'No recipient will receive any assets.',
-              style: TextStyle(
-                color: BinancePalette.textMuted, fontSize: 10.5,
-                height: 1.4),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -218,7 +208,7 @@ class _SendRecipientScreenState extends State<SendRecipientScreen> {
 
   void _unavailable() {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Scheduled transfers are not available in this demo.'),
+      content: Text('Scheduled transfers are not available yet.'),
     ));
   }
 }

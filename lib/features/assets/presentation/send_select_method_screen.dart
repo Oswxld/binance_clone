@@ -48,7 +48,7 @@ class SendSelectMethodScreen extends StatelessWidget {
             title: 'Sell to KES',
             subtitle: 'Sell crypto easily to your account.',
             onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Sell to KES is not in this demo.'))),
+              const SnackBar(content: Text('Sell to KES is not available yet.'))),
           ),
         ],
       )),

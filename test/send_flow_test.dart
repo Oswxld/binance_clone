@@ -75,7 +75,7 @@ void main() {
     expect(fake.calls, 1);
     expect(fake.lastAsset, 'USDT');
     expect(fake.lastAmount, 2.5);
-    expect(find.text('Demo balance updated'), findsOneWidget);
+    expect(find.text('Balance updated'), findsOneWidget);
   });
 
   testWidgets('Payee amount cannot exceed available demo holdings',
