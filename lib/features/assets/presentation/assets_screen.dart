@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../domain/wallet_allocation.dart';
 import 'select_currency_screen.dart';
+import 'send_select_asset_screen.dart';
 import 'portfolio_sparkline.dart';
 
 import '../../home/domain/home_balance.dart';
@@ -265,7 +266,17 @@ class _AssetActions extends StatelessWidget {
             ),
           ),
         ),
-        const Expanded(child: _ActionButton('Send', 'asset_send')),
+        Expanded(
+          child: _ActionButton(
+            'Send',
+            'asset_send',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const SendSelectAssetScreen(),
+              ),
+            ),
+          ),
+        ),
         const Expanded(child: _ActionButton('Transfer', 'asset_transfer')),
         const Expanded(child: _ActionButton('Earn', 'asset_earn')),
       ],
