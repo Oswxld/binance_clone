@@ -6,8 +6,8 @@ import '../../../core/theme/binance_palette.dart';
 import '../../../core/utils/wallet_amount_formatter.dart';
 import 'withdraw_enter_address_screen.dart';
 
-/// Withdrawal details for the local wallet deduction. The reference is a
-/// local UI reference, not a transaction hash from a blockchain network.
+/// Withdrawal details paired with the g_messages withdrawal notification.
+/// The random transaction ID is a mock reference, not a blockchain TX hash.
 class WithdrawalDetailsScreen extends StatelessWidget {
   const WithdrawalDetailsScreen({
     super.key,
@@ -15,21 +15,20 @@ class WithdrawalDetailsScreen extends StatelessWidget {
     required this.totalAmount,
     required this.networkFee,
     required this.createdAt,
+    required this.transactionId,
   });
 
   final String address;
   final double totalAmount;
   final double networkFee;
   final DateTime createdAt;
-
-  String get _reference =>
-      'W' + createdAt.microsecondsSinceEpoch.toRadixString(16).toUpperCase();
+  final String transactionId;
 
   String get _date {
-    final d = createdAt.toLocal();
+    final d = createdAt.toUtc();
     String pad(int n) => n.toString().padLeft(2, '0');
     return '${d.year}-${pad(d.month)}-${pad(d.day)} '
-        '${pad(d.hour)}:${pad(d.minute)}:${pad(d.second)}';
+        '${pad(d.hour)}:${pad(d.minute)}:${pad(d.second)} UTC';
   }
 
   @override
@@ -94,7 +93,7 @@ class WithdrawalDetailsScreen extends StatelessWidget {
             const SizedBox(height: 23),
             _line('Address', address, copy: true),
             const SizedBox(height: 23),
-            _line('Reference', _reference, copy: true),
+            _line('Txid', transactionId, copy: true),
             const SizedBox(height: 23),
             _line('Amount',
               '${_pretty(totalAmount)} USDT'),
