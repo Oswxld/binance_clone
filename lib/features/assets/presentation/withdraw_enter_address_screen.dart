@@ -138,7 +138,7 @@ class _AddressState extends State<WithdrawEnterAddressScreen> {
             key: const Key('withdraw-sample-address'),
             onTap: () {
               const value = 'TRf4Bmb9TZtzAU3oUoFb3pLoCLSQcv4kBi';
-              addressController.value = const TextEditingValue(
+              addressController.value = TextEditingValue(
                 text: value,
                 selection: TextSelection.collapsed(offset: value.length));
               setState(() {});
