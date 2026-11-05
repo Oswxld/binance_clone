@@ -49,8 +49,14 @@ class SendSelectMethodScreen extends StatelessWidget {
               subtitle: 'Withdraw Crypto from Binance to other exchanges/wallets',
               icon: 'assets/svgs/withdraw.svg',
               badge: 'Last Used',
-              onTap: () => Navigator.push(context, MaterialPageRoute<void>(
-                builder: (_) => const WithdrawEnterAddressScreen())),
+              onTap: () {
+                if (asset != 'USDT') {
+                  _unavailable(context, '$asset withdrawal');
+                  return;
+                }
+                Navigator.push(context, MaterialPageRoute<void>(
+                  builder: (_) => const WithdrawEnterAddressScreen()));
+              },
             ),
             const SizedBox(height: 12),
             _MethodCard(
