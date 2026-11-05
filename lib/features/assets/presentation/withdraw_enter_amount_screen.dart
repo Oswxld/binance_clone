@@ -6,7 +6,7 @@ import '../../../core/theme/binance_palette.dart';
 import '../../../core/utils/wallet_amount_formatter.dart';
 import '../../home/domain/home_balance.dart';
 import '../../home/presentation/home_provider.dart';
-import '../data/demo_send_repository.dart';
+import '../data/withdrawal_repository.dart';
 import 'withdrawal_details_screen.dart';
 
 /// USDT on TRC20 amount entry. Uses the phone's actual decimal keyboard.
@@ -56,9 +56,12 @@ class _WithdrawEnterAmountState
     FocusScope.of(context).unfocus();
     setState(() { _submitting = true; _error = null; });
     try {
-      // Atomic, user-scoped debit of the existing Supabase wallet row.
-      await ref.read(demoSendRepositoryProvider).deduct(
-        asset: 'USDT', amount: submittedAmount);
+      // Server atomically deducts USDT and inserts the g_messages row.
+      final receipt = await ref.read(withdrawalRepositoryProvider)
+          .withdrawUsdt(
+            amount: submittedAmount,
+            address: widget.address,
+          );
       ref.invalidate(homeBalanceProvider);
       if (!mounted) return;
       Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
@@ -66,7 +69,8 @@ class _WithdrawEnterAmountState
           address: widget.address,
           totalAmount: submittedAmount,
           networkFee: submittedFee,
-          createdAt: DateTime.now(),
+          createdAt: receipt.createdAtUtc,
+          transactionId: receipt.transactionId,
         ),
       ));
     } catch (error) {
