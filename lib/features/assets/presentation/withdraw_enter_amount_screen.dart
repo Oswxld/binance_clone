@@ -51,19 +51,21 @@ class _WithdrawEnterAmountState
 
   Future<void> _withdraw() async {
     if (_submitting || amount <= 0) return;
+    final submittedAmount = amount;
+    final submittedFee = networkFee;
     FocusScope.of(context).unfocus();
     setState(() { _submitting = true; _error = null; });
     try {
       // Atomic, user-scoped debit of the existing Supabase wallet row.
       await ref.read(demoSendRepositoryProvider).deduct(
-        asset: 'USDT', amount: amount);
+        asset: 'USDT', amount: submittedAmount);
       ref.invalidate(homeBalanceProvider);
       if (!mounted) return;
       Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
         builder: (_) => WithdrawalDetailsScreen(
           address: widget.address,
-          totalAmount: amount,
-          networkFee: networkFee,
+          totalAmount: submittedAmount,
+          networkFee: submittedFee,
           createdAt: DateTime.now(),
         ),
       ));
@@ -140,6 +142,7 @@ class _WithdrawEnterAmountState
                   child: TextField(
                     key: const Key('withdraw-usdt-amount'),
                     controller: _controller,
+                    enabled: !_submitting,
                     autofocus: true,
                     textInputAction: TextInputAction.done,
                     keyboardType: const TextInputType.numberWithOptions(
